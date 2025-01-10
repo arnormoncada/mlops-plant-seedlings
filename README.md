@@ -1,7 +1,13 @@
-# plant_seedlings
+# Project description
 
-TODO
-
+## Goal
+This is the github repo for the project by group 14. In this project we use an image classification model to classify images of crop and weed seedlings. Weeds compete with other plants for nutrients and water, so correctly identifying which seedlings are weed is very important.
+## Framework
+In this project we use the TIMM framework to get an image classification architecture that we train on our data.
+## Data
+The data we plan to use is found at https://www.kaggle.com/datasets/vbookshelf/v2-plant-seedlings-dataset which has 12 classes with 5539 images. These classes consist of different common plant species in Denmark. In this dataset the classes have some imbalance. 
+## Model 
+The model we use will be some pre-trained model from the TIMM package.
 ## Project structure
 
 The directory structure of the project looks like this:
