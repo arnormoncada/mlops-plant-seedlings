@@ -1,7 +1,7 @@
 # Project description
 
 ## Goal
-This is the GitHub repository by Group 14. In this project, we develop an image classification model to classify images of crop and weed seedlings. The goal is to address a challenge in modern agriculture: improving efficiency and reducing labor while meeting increasing food demands.
+This is the GitHub repository by Group 14. In this project, we employ an image classification model to classify images of crop and weed seedlings. The goal is to address a challenge in modern agriculture: improving efficiency and reducing labor while meeting increasing food demands.
 
 Humans have been practicing agriculture for over 12,000 years and have continuously worked to increase both yield and efficiency. Over time, advancements in technology, methods, and tools have transformed the way we cultivate crops. However, one major challenge in agriculture today is meeting the growing global demand for food while grappling with limited resources, such as arable land, water, and labor. Weeds present a significant obstacle, as they compete with crops for essential nutrients and water, potentially reducing yields dramatically.
 
