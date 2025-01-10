@@ -67,7 +67,7 @@ def train() -> None:
             targets.append(target.detach().cpu())
 
             if i % 100 == 0:
-                print(f"Epoch {epoch+1}, iter {i}, loss: {loss.item()}")
+                print(f"Epoch {epoch+1}, Iteration {i}, Loss: {loss.item()}, Accuracy: {accuracy}")
 
                 # add a plot of the input images
                 # images = wandb.Image(img[:5].detach().cpu(), caption="Input images")
