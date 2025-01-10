@@ -4,6 +4,9 @@ docs/site/
 # datasets
 *.pt
 
+data/raw/
+data/processed/
+
 # test cache
 manual_test/
 

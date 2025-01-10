@@ -1,0 +1,4 @@
+model_path: "models/model.pth"
+fig_path: "reports/figures/training_statistics.png"
+batch_size: 32
+epochs: 2
