@@ -1,3 +1,3 @@
 ## Documentation
 
-Documentation for session2
+Documentation for plant-seedlings
