@@ -6,9 +6,9 @@ This is the github repo for the project by group 14. In this project we use an i
 In this project we use the TIMM framework to get an image classification architecture that we train on our data.
 ## Data
 The data we plan to use is found at 
-´´´bash
+```shell
 https://www.kaggle.com/datasets/vbookshelf/v2-plant-seedlings-dataset
-´´´
+```
 which has 12 classes with 5539 images. These classes consist of different common plant species in Denmark. In this dataset the classes have some imbalance. 
 ## Model 
 The model we use will be some pre-trained model from the TIMM package.
