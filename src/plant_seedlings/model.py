@@ -12,7 +12,7 @@ class MyAwesomeModel(nn.Module):
         self.conv3 = nn.Conv2d(32, 64, 3, 1)
         self.dropout = nn.Dropout(0.5)
         self.fc1 = nn.Linear(40000, 128)
-        self.fc2 = nn.Linear(128, 12)
+        self.fc2 = nn.Linear(128, 13) # change form 12 to 13 to match class number
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass."""
