@@ -1,19 +1,73 @@
-#test sweep config if needed
+# Test sweep config if needed
+# All values should be change or atleast look at.
 
 program: train.py
-name: sweepdemo
-project: my_project  # change this
-entity: my_entity  # change this
+name: resnet_sweep
+project: my_project  # replace with your actual project name
+entity: my_entity    # replace with your actual entity/team name
+
 metric:
-    goal: minimize
-    name: validation_loss
+  goal: minimize
+  name: validation_loss
+
 parameters:
-    learning_rate:
-        min: 0.0001
-        max: 0.1
-        distribution: log_uniform
-    batch_size:
-        values: [16, 32, 64]
-    epochs:
-        values: [5, 10, 15]
-run_cap: 10
+  # ----------------------
+  # Model-related
+  # This section might not be needed unless we want to sweep over different models
+  # ----------------------
+  architecture:
+    values: [resnet18, resnet34, resnet50, resnet101, resnet152] 
+  pretrained:
+    values: [true, false]
+
+  # ----------------------
+  # Optimizer-related
+  # ----------------------
+  optimizer:
+    values: [sgd, adam]
+  learning_rate:
+    min: 0.0001
+    max: 0.1
+    distribution: log_uniform
+  momentum:
+    min: 0.8
+    max: 0.99
+    distribution: uniform  # Only relevant for optimizers like SGD
+  weight_decay:
+    min: 1e-5
+    max: 1e-2
+    distribution: log_uniform
+
+  # ----------------------
+  # Scheduler-related
+  # ----------------------
+  lr_scheduler:
+    values: [none, step, multi_step, cosine]
+  step_size:
+    values: [5, 10, 20]  # Only relevant if lr_scheduler is 'step'
+  gamma:
+    values: [0.1, 0.5]   # Only relevant if lr_scheduler is 'step' or 'multi_step'
+
+  # ----------------------
+  # Training-related
+  # ----------------------
+  batch_size:
+    values: [16, 32, 64]
+  epochs:
+    values: [5, 10, 15]
+
+  # ----------------------
+  # Run limiter
+  # The max duration will most likely have to change
+  # ----------------------
+  run_limiter:
+    max_runs: 100  # Set the maximum number of runs
+    max_duration: 3600  # Set the maximum duration in seconds
+
+  # ----------------------
+  # Search method
+  # Here we can set the search method. I would like to try bayesian if it doesn't work
+  # we can set it to random search then once we found the most sigficant parameters we can 
+  # switch to grid search to fine tune further.
+  # ----------------------
+  method: bayesian  # Options: grid, random, bayesian
