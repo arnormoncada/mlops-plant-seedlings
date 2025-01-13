@@ -1,4 +1,5 @@
 defaults:
   - optimizer: adam
   - training: training_conf
+  - models: mobilenetv3  # MyAwesomeModel
 
