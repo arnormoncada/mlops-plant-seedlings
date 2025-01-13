@@ -34,9 +34,9 @@ def train() -> None:
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
     print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
 
-    run = wandb.init(
+    wandb.init(
         project="Test_DeleteLater",
-        config={"lr": cfg.optimizer['lr'], "batch_size": hparams['batch_size'], "epochs": hparams['epochs']},
+        config={"lr": cfg.optimizer["lr"], "batch_size": hparams["batch_size"], "epochs": hparams["epochs"]},
         name="run",
     )
 
