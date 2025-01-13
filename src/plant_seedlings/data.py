@@ -39,21 +39,6 @@ def plant_seedlings(data_path: str) -> tuple[torch.utils.data.Dataset, torch.uti
     return train_loader, val_loader
 
 
-def display_random_image (raw_data_path: str) -> None:
-    """Display a random image from the plant seed dataset."""
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    dataset = datasets.ImageFolder(root=raw_data_path)
-    idx = np.random.randint(len(dataset))
-    img, label = dataset[idx]
-
-    plt.imshow(img)
-    plt.title(dataset.classes[label])
-    plt.axis('off')
-    plt.show()
-
-
 if __name__ == "__main__":
     raw_data_path = "data/raw"
     processed_data_path = "data/processed"
