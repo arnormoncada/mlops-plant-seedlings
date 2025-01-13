@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import torch
 import typer
 from data import plant_seedlings
+
 # from model import MyAwesomeModel
 import hydra
 import typer.completion
@@ -19,7 +20,9 @@ app = typer.Typer()
 def train() -> None:
     """Train a model on MNIST."""
     print("Training day and night")
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+    DEVICE = torch.device(
+        "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+    )
 
     with initialize(config_path="../../configs"):
         cfg = compose(config_name="config.yaml")
@@ -28,7 +31,7 @@ def train() -> None:
     # model = MyAwesomeModel().to(DEVICE)
     model = hydra.utils.instantiate(cfg.models).to(DEVICE)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
-    print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer['lr'], hparams['batch_size'], hparams['epochs']))
+    print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
 
     # run = wandb.init(
     #     entity="Seb_Jones",
@@ -46,7 +49,7 @@ def train() -> None:
 
     statistics = {"train_loss": [], "train_accuracy": []}
     # wandb.log(statistics)
-    for epoch in range(hparams['epochs']):
+    for epoch in range(hparams["epochs"]):
         model.train()
 
         preds, targets = [], []
@@ -105,7 +108,7 @@ def train() -> None:
     axs[0].set_title("Train loss")
     axs[1].plot(statistics["train_accuracy"])
     axs[1].set_title("Train accuracy")
-    fig.savefig(hparams['fig_path'])
+    fig.savefig(hparams["fig_path"])
 
     # final_accuracy = accuracy_score(targets, preds.argmax(dim=1))
     # final_precision = precision_score(targets, preds.argmax(dim=1), average="weighted")
@@ -113,7 +116,7 @@ def train() -> None:
     # final_f1 = f1_score(targets, preds.argmax(dim=1), average="weighted")
 
     # first we save the model to a file then log it as an artifact
-    torch.save(model.state_dict(), hparams['model_path'])
+    torch.save(model.state_dict(), hparams["model_path"])
     # artifact = wandb.Artifact(
     #     name="corrupt_mnist_model",
     #     type="model",
