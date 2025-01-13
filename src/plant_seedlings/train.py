@@ -6,6 +6,7 @@ from data import plant_seedlings
 # from model import MyAwesomeModel
 import hydra
 import typer.completion
+import wandb
 from hydra import compose, initialize
 # from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
 # from time import time
@@ -33,12 +34,11 @@ def train() -> None:
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
     print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
 
-    # run = wandb.init(
-    #     entity="Seb_Jones",
-    #     project="corrupt_mnist",
-    #     config={"lr": cfg.optimizer['lr'], "batch_size": hparams['batch_size'], "epochs": hparams['epochs']},
-    #     name="run",
-    # )
+    run = wandb.init(
+        project="Test_DeleteLater",
+        config={"lr": cfg.optimizer['lr'], "batch_size": hparams['batch_size'], "epochs": hparams['epochs']},
+        name="run",
+    )
 
     # train_set, _ = corrupt_mnist()
 
@@ -65,7 +65,7 @@ def train() -> None:
             accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
             statistics["train_accuracy"].append(accuracy)
 
-            # wandb.log({"train_loss": loss.item(), "train_accuracy": accuracy})
+            wandb.log({"train_loss": loss.item(), "train_accuracy": accuracy})
 
             preds.append(y_pred.detach().cpu())
             targets.append(target.detach().cpu())
