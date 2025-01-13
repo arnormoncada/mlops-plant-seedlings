@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import torch
 import typer
-from data import plant_seed_dataloader
-from model import MyAwesomeModel
+from data import plant_seedlings
+
+# from model import MyAwesomeModel
 import hydra
 import typer.completion
 import wandb
@@ -20,15 +21,18 @@ app = typer.Typer()
 def train() -> None:
     """Train a model on MNIST."""
     print("Training day and night")
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+    DEVICE = torch.device(
+        "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+    )
 
     with initialize(config_path="../../configs"):
         cfg = compose(config_name="config.yaml")
 
     hparams = cfg.training
-    model = MyAwesomeModel().to(DEVICE)
+    # model = MyAwesomeModel().to(DEVICE)
+    model = hydra.utils.instantiate(cfg.models).to(DEVICE)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
-    print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer['lr'], hparams['batch_size'], hparams['epochs']))
+    print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
 
     run = wandb.init(
         project="Test_DeleteLater",
@@ -38,14 +42,14 @@ def train() -> None:
 
     # train_set, _ = corrupt_mnist()
 
-    # train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=hparams['batch_size'])
-    train_dataloader = plant_seed_dataloader(data_path="data/raw", batch_size=hparams['batch_size'])
-    print(len(train_dataloader))
+    train_dataloader, _ = plant_seedlings(data_path="data/processed")
+
+    print(len(train_dataloader.dataset))
     loss_fn = torch.nn.CrossEntropyLoss()
 
     statistics = {"train_loss": [], "train_accuracy": []}
     # wandb.log(statistics)
-    for epoch in range(hparams['epochs']):
+    for epoch in range(hparams["epochs"]):
         model.train()
 
         preds, targets = [], []
@@ -76,7 +80,8 @@ def train() -> None:
                 # add a plot of histogram of the gradients
                 # grads = torch.cat([p.grad.flatten() for p in model.parameters() if p.grad is not None], 0)
                 # wandb.log({"gradients": wandb.Histogram(grads)})
-
+            # if i >= 5:
+            #     break
         # add a custom matplotlib plot of the ROC curves
         preds = torch.cat(preds, 0)
         targets = torch.cat(targets, 0)
@@ -103,7 +108,7 @@ def train() -> None:
     axs[0].set_title("Train loss")
     axs[1].plot(statistics["train_accuracy"])
     axs[1].set_title("Train accuracy")
-    fig.savefig(hparams['fig_path'])
+    fig.savefig(hparams["fig_path"])
 
     # final_accuracy = accuracy_score(targets, preds.argmax(dim=1))
     # final_precision = precision_score(targets, preds.argmax(dim=1), average="weighted")
@@ -111,7 +116,7 @@ def train() -> None:
     # final_f1 = f1_score(targets, preds.argmax(dim=1), average="weighted")
 
     # first we save the model to a file then log it as an artifact
-    torch.save(model.state_dict(), hparams['model_path'])
+    torch.save(model.state_dict(), hparams["model_path"])
     # artifact = wandb.Artifact(
     #     name="corrupt_mnist_model",
     #     type="model",
