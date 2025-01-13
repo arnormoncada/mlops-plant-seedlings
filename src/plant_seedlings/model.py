@@ -1,5 +1,8 @@
 import torch
 from torch import nn
+# from timm import create_model
+
+# class timm_model(nn.Module):
 
 
 class MyAwesomeModel(nn.Module):
@@ -25,7 +28,7 @@ class MyAwesomeModel(nn.Module):
         x = torch.flatten(x, 1)
         # x = x.view(-1, 64 * 28 * 28)
         x = self.dropout(x)
-        # print(x.shape)
+        print(x.shape)
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
 
