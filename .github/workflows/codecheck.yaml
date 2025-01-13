@@ -9,7 +9,7 @@ on:
     - main
 
 jobs:
-  format:
+  lint_and_format:
       runs-on: ubuntu-latest
       steps:
       - name: Checkout code
