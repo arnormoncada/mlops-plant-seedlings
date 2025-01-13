@@ -3,3 +3,11 @@ defaults:
   - training: training_conf
   - models: mobilenetv3  # MyAwesomeModel
 
+# For logging
+logging:
+  filename: "train.log"
+  rotation: "1 day"
+  retention: "7 days"
+  level: "DEBUG"
+  backtrace: true 
+  colorize: true  # Colorize log output
