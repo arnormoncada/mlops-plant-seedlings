@@ -1,0 +1,2 @@
+_target_: model.MyAwesomeModel
+dropout_rate: 0.5

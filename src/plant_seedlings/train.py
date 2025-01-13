@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import torch
 import typer
 from data import plant_seedlings
-from model import MyAwesomeModel
+# from model import MyAwesomeModel
 import hydra
 import typer.completion
 from hydra import compose, initialize
@@ -25,7 +25,8 @@ def train() -> None:
         cfg = compose(config_name="config.yaml")
 
     hparams = cfg.training
-    model = MyAwesomeModel().to(DEVICE)
+    # model = MyAwesomeModel().to(DEVICE)
+    model = hydra.utils.instantiate(cfg.models).to(DEVICE)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
     print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer['lr'], hparams['batch_size'], hparams['epochs']))
 
@@ -39,7 +40,7 @@ def train() -> None:
     # train_set, _ = corrupt_mnist()
 
     train_dataloader, _ = plant_seedlings(data_path="data/processed")
-    
+
     print(len(train_dataloader.dataset))
     loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -76,7 +77,8 @@ def train() -> None:
                 # add a plot of histogram of the gradients
                 # grads = torch.cat([p.grad.flatten() for p in model.parameters() if p.grad is not None], 0)
                 # wandb.log({"gradients": wandb.Histogram(grads)})
-
+            # if i >= 5:
+            #     break
         # add a custom matplotlib plot of the ROC curves
         preds = torch.cat(preds, 0)
         targets = torch.cat(targets, 0)
