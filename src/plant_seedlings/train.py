@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import torch
 import typer
-from data import plant_seed_dataloader
+from data import plant_seedlings
 from model import MyAwesomeModel
 import hydra
 import typer.completion
@@ -38,9 +38,9 @@ def train() -> None:
 
     # train_set, _ = corrupt_mnist()
 
-    # train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=hparams['batch_size'])
-    train_dataloader = plant_seed_dataloader(data_path="data/raw", batch_size=hparams['batch_size'])
-    print(len(train_dataloader))
+    train_dataloader, _ = plant_seedlings(data_path="data/processed")
+    
+    print(len(train_dataloader.dataset))
     loss_fn = torch.nn.CrossEntropyLoss()
 
     statistics = {"train_loss": [], "train_accuracy": []}
