@@ -6,6 +6,6 @@ model = MyAwesomeModel()
 
 for img, target in train_dataloader:
     print(img.shape, target.shape)
-    
+
     model(img)
     break

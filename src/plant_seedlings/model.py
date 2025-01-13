@@ -5,13 +5,14 @@ from timm import create_model
 # import pytorch_lightning  as pl
 
 
-class timm_model():
+class timm_model:
     """Simple resnet model fetched from timm."""
 
-    def __init__(self,
-                 model_name: str = "resnet18",
-                 num_classes: int = 12,
-                 ) -> None:
+    def __init__(
+        self,
+        model_name: str = "resnet18",
+        num_classes: int = 12,
+    ) -> None:
         super().__init__()
 
         self.model = create_model(model_name, pretrained=True, num_classes=num_classes)
@@ -57,5 +58,5 @@ if __name__ == "__main__":
     dummy_input = torch.randn(1, 3, 224, 224)
     output = model(dummy_input)
     print(f"Output shape: {output.shape}")
-    
-    print(timm.list_models('mobilenet*'))
+
+    print(timm.list_models("mobilenet*"))

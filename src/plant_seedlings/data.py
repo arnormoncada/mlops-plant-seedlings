@@ -8,10 +8,7 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
 
     print("Preprocessing data...")
 
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor()
-    ])
+    transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor()])
 
     dataset = datasets.ImageFolder(root=raw_data_path, transform=transform)
 
@@ -29,7 +26,6 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
     torch.save(val_loader, f"{processed_data_path}/val.pth")
 
     print("Data preprocessing complete.")
-
 
 
 def plant_seedlings(data_path: str) -> tuple[torch.utils.data.Dataset, torch.utils.data.Dataset]:
