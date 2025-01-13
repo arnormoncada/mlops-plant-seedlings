@@ -44,5 +44,11 @@ if __name__ == "__main__":
     train_loader, val_loader = plant_seedlings(processed_data_path)
     num_train_images = len(train_loader.dataset)
     num_val_images = len(val_loader.dataset)
+
     print(f"Number of training images: {num_train_images}")
     print(f"Number of validation images: {num_val_images}")
+
+    print(f"Total number of images: {num_train_images + num_val_images}")
+
+    print(f"Number of classes: {len(train_loader.dataset.dataset.classes)}")
+    print(f"Classes: {train_loader.dataset.dataset.classes}")
