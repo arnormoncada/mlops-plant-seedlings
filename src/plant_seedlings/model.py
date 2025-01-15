@@ -5,7 +5,7 @@ from timm import create_model
 # import pytorch_lightning  as pl
 
 
-class timm_model:
+class timm_model(nn.Module):
     """Simple resnet model fetched from timm."""
 
     def __init__(
@@ -20,6 +20,10 @@ class timm_model:
     def forward(self, x):
         x = self.model(x)
         return x
+    
+    def load_state_dict(self, state_dict, strict = True):
+        """Override to load state_dict directly into the inner model."""
+        self.model.load_state_dict(state_dict, strict)
 
 
 class MyAwesomeModel(nn.Module):

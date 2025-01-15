@@ -8,6 +8,8 @@ import hydra
 import typer.completion
 import wandb
 from hydra import compose, initialize
+from omegaconf import OmegaConf
+
 # from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
 # from time import time
 
@@ -20,16 +22,18 @@ app = typer.Typer()
 @app.command()
 def train() -> None:
     """Train a model on MNIST."""
+    
     print("Training day and night")
     DEVICE = torch.device(
         "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     )
 
-    with initialize(config_path="../../configs"):
+    with initialize(config_path="../../configs", version_base="1.3"):
         cfg = compose(config_name="config.yaml")
+    
+    print(OmegaConf.to_yaml(cfg))
 
     hparams = cfg.training
-    # model = MyAwesomeModel().to(DEVICE)
     model = hydra.utils.instantiate(cfg.models).to(DEVICE)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
     print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
@@ -40,11 +44,9 @@ def train() -> None:
         name="run",
     )
 
-    # train_set, _ = corrupt_mnist()
-
     train_dataloader, _ = plant_seedlings(data_path="data/processed")
 
-    print(len(train_dataloader.dataset))
+    print("Number of training images: ", len(train_dataloader.dataset))
     loss_fn = torch.nn.CrossEntropyLoss()
 
     statistics = {"train_loss": [], "train_accuracy": []}
@@ -115,8 +117,13 @@ def train() -> None:
     # final_recall = recall_score(targets, preds.argmax(dim=1), average="weighted")
     # final_f1 = f1_score(targets, preds.argmax(dim=1), average="weighted")
 
-    # first we save the model to a file then log it as an artifact
-    torch.save(model.state_dict(), hparams["model_path"])
+    # first we save the model to a file and then log it to wandb as an artifact
+    model_name = OmegaConf.select(cfg, "models.model_name")
+    if model_name is None:
+        model_name = "custom"
+    
+    model_path_and_name = hparams["model_path"] + model_name + ".pth"
+    torch.save(model.state_dict(), model_path_and_name)
     # artifact = wandb.Artifact(
     #     name="corrupt_mnist_model",
     #     type="model",

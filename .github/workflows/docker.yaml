@@ -1,0 +1,27 @@
+name: Docker Image continuous integration
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v4
+      - name: Build and push train docker image
+        run: |
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login \
+            -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin docker.io
+          docker build ./dockerfiles --file ./dockerfiles/train.dockerfile \
+            --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:$GITHUB_SHA
+          docker push \
+            docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:$GITHUB_SHA
+      - name: Build and push api docker image
+        run: |
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login \
+            -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin docker.io
+          docker build ./dockerfiles --file ./dockerfiles/api.dockerfile \
+            --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:$GITHUB_SHA
+          docker push \
+            docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_REPOSITORY }}:$GITHUB_SHA
