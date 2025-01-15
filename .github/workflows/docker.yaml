@@ -2,7 +2,11 @@ name: Docker Image continuous integration
 
 on:
   push:
-    branches: [ master ]
+    branches:
+    - main
+  pull_request: # Remove this line when workflow is working as expected
+    branches:
+    - main
 
 jobs:
     build:
