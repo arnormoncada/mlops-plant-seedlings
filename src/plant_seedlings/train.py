@@ -10,14 +10,15 @@ import typer.completion
 import wandb
 from hydra import compose, initialize
 from omegaconf import OmegaConf
+from pathlib import Path
 
 # from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
 # from time import time
 
-# import wandb
+# path to the .env file
+dotenv_path = Path(__file__).parents[2] / ".env"
 
-
-load_dotenv()
+load_dotenv(dotenv_path)
 
 # Use the API key from the environment variable
 wandb_api_key = os.getenv("WANDB_API_KEY")
