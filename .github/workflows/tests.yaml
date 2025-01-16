@@ -33,18 +33,22 @@ jobs:
           python -m pip install -U pip setuptools wheel
           pip install -r requirements.txt
           pip list
-      - uses: iterative/setup-dvc@v1
+      
+      # - name: iteratively/setup-dvc
+      #   uses: iterative/setup-dvc@v1
 
-      - name: Get data
-        run: dvc pull --force
-        env:
-          GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+      #TODO: Add back to github actions when dvc pull in github actions is dependable and deterministic
+      # https://github.com/iterative/setup-dvc/issues/66
+      # - name: Get data
+      #   run: dvc pull --force
+      #   env:
+      #     GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
 
       - name: Run tests & coverage
         run: |
           coverage run -m pytest tests/
-          coverage xml
-          coverage report -m
+          coverage xml -i
+          coverage report -m -i
           
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
