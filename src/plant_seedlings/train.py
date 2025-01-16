@@ -12,7 +12,7 @@ from hydra import compose, initialize
 from omegaconf import OmegaConf
 from pathlib import Path
 
-# from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
 # from time import time
 
 # path to the .env file
@@ -50,7 +50,7 @@ def train() -> None:
     wandb.init(
         project="Test_DeleteLater",
         config={"lr": cfg.optimizer["lr"], "batch_size": hparams["batch_size"], "epochs": hparams["epochs"]},
-        name="run",
+        name="run22",
     )
 
     train_dataloader, _ = plant_seedlings(data_path="data/processed")
@@ -121,26 +121,27 @@ def train() -> None:
     axs[1].set_title("Train accuracy")
     fig.savefig(hparams["fig_path"])
 
-    # final_accuracy = accuracy_score(targets, preds.argmax(dim=1))
-    # final_precision = precision_score(targets, preds.argmax(dim=1), average="weighted")
-    # final_recall = recall_score(targets, preds.argmax(dim=1), average="weighted")
-    # final_f1 = f1_score(targets, preds.argmax(dim=1), average="weighted")
+    final_accuracy = accuracy_score(targets, preds.argmax(dim=1))
+    final_precision = precision_score(targets, preds.argmax(dim=1), average="weighted")
+    final_recall = recall_score(targets, preds.argmax(dim=1), average="weighted")
+    final_f1 = f1_score(targets, preds.argmax(dim=1), average="weighted")
 
     # first we save the model to a file and then log it to wandb as an artifact
     model_name = OmegaConf.select(cfg, "models.model_name")
     if model_name is None:
         model_name = "custom"
     
+    print(hparams["model_path"])
     model_path_and_name = hparams["model_path"] + model_name + ".pth"
     torch.save(model.state_dict(), model_path_and_name)
-    # artifact = wandb.Artifact(
-    #     name="corrupt_mnist_model",
-    #     type="model",
-    #     description="A model trained to classify corrupt MNIST images",
-    #     metadata={"accuracy": final_accuracy, "precision": final_precision, "recall": final_recall, "f1": final_f1},
-    # )
-    # artifact.add_file(hparams['model_path'])
-    # run.log_artifact(artifact)
+    artifact = wandb.Artifact(
+        name="corrupt_mnist_model",
+        type="model",
+        description="A model trained to classify corrupt MNIST images",
+        metadata={"accuracy": final_accuracy, "precision": final_precision, "recall": final_recall, "f1": final_f1},
+    )
+    artifact.add_file(model_path_and_name)
+    wandb.log_artifact(artifact)
 
 
 if __name__ == "__main__":
