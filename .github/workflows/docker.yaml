@@ -16,14 +16,14 @@ jobs:
         uses: actions/checkout@v4
 
       # Build and push train Docker image
-      - name: Build and push train docker image
-        run: |
-          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login \
-            -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin docker.io
-          docker build . --file ./dockerfiles/train.dockerfile \
-            --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/train:$GITHUB_SHA
-          docker push \
-            docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/train:$GITHUB_SHA
+      # - name: Build and push train docker image
+      #   run: |
+      #     echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login \
+      #       -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin docker.io
+      #     docker build . --file ./dockerfiles/train.dockerfile \
+      #       --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/train:$GITHUB_SHA
+      #     docker push \
+      #       docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/train:$GITHUB_SHA
 
       # Build and push API Docker image
       - name: Build and push api docker image

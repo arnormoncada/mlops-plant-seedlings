@@ -7,7 +7,9 @@ RUN apt update && \
 
 COPY requirements.txt requirements.txt
 COPY pyproject.toml pyproject.toml
+COPY configs/ configs/
 COPY src/ src/
+COPY data/ data/
 
 WORKDIR /
 RUN pip install -r requirements.txt --no-cache-dir
@@ -15,4 +17,4 @@ RUN pip install . --no-deps --no-cache-dir
 
 ENTRYPOINT ["python", "-u", "src/plant_seedlings/train.py"]
 # docker build -f dockerfiles/train.dockerfile . -t train:latest
-# docker run train:latest
+# docker run --env-file .env train:latest
