@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: ["ubuntu-latest", "windows-latest", "macos-latest"]
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12"]
 
     steps:
       - name: Checkout code
@@ -36,7 +36,7 @@ jobs:
       - uses: iterative/setup-dvc@v1
 
       - name: Get data
-        run: dvc pull
+        run: dvc pull --force
         env:
           GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
 

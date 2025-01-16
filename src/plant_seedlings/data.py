@@ -1,6 +1,7 @@
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import torch
+import json
 
 
 def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
@@ -24,6 +25,12 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
     # Save the processed data to disk
     torch.save(train_loader, f"{processed_data_path}/train.pth")
     torch.save(val_loader, f"{processed_data_path}/val.pth")
+
+    # create dict/json with key as index and value as class name
+    class_to_idx = dataset.class_to_idx
+    idx_to_class = {v: k for k, v in class_to_idx.items()}
+    with open("models/classes.json", "w") as f:
+        json.dump(idx_to_class, f, indent=4)
 
     print("Data preprocessing complete.")
 
