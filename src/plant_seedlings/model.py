@@ -19,6 +19,7 @@ class timm_model():
             param.requires_grad = False
         self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
 
+
     def forward(self, x):
         x = self.model(x)
         return x
