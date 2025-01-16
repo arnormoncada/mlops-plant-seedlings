@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import torch
 import typer
 from data import plant_seedlings
-
+import os
+from dotenv import load_dotenv
 # from model import MyAwesomeModel
 import hydra
 import typer.completion
@@ -15,7 +16,14 @@ from omegaconf import OmegaConf
 
 # import wandb
 
+
+load_dotenv()
+
+# Use the API key from the environment variable
+wandb_api_key = os.getenv("WANDB_API_KEY")
+wandb.login(key=wandb_api_key)
 app = typer.Typer()
+
 # @hydra.main(config_path="config", config_name="config.yaml")
 
 
