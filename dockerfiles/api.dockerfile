@@ -9,6 +9,7 @@ COPY src src/
 COPY requirements.txt requirements.txt
 COPY pyproject.toml pyproject.toml
 COPY models models/
+COPY models/classes.json models/classes.json
 
 WORKDIR /
 RUN pip install -r requirements.txt --no-cache-dir --verbose

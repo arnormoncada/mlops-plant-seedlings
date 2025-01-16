@@ -33,14 +33,14 @@ async def lifespan(app: FastAPI):
         print("Models loaded successfully!")
 
         print("Loading the classes...")
-        with open("data/processed/classes.json", "r") as f:
+        with open("models/classes.json", "r") as f:
             classes = json.load(f)
         
         print("Classes loaded successfully!")
             
         yield
         print("Cleaning up...")
-        del custom_model, mobile_net, device
+        del custom_model, mobile_net, device, classes
         print("Shutting down the app...Goodbye!")
     finally:
         pass

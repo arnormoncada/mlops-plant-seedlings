@@ -29,7 +29,7 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
     # create dict/json with key as index and value as class name
     class_to_idx = dataset.class_to_idx
     idx_to_class = {v: k for k, v in class_to_idx.items()}
-    with open(f"{processed_data_path}/classes.json", "w") as f:
+    with open("models/classes.json", "w") as f:
         json.dump(idx_to_class, f, indent=4)
 
     print("Data preprocessing complete.")

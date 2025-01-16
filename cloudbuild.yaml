@@ -1,0 +1,50 @@
+steps:
+# Debugging step: List all files in the build context
+- name: 'ubuntu'
+  id: 'List files in build context'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - 'ls -R'
+
+# Build the API image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build API container image'
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/my-container-registry/api:$BUILD_ID',
+    '-f',
+    'dockerfiles/api.dockerfile'
+  ]
+
+# Push the API image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push API container image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/my-container-registry/api:$BUILD_ID'
+  ]
+
+# Deply the API image
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Deploy API container image'
+  args: [
+    'run',
+    'deploy',
+    'plant-seedlings-api',
+    '--image',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/my-container-registry/api:$BUILD_ID',
+    '--region',
+    'europe-west1',
+    '--platform',
+    'managed',
+    '--allow-unauthenticated'
+  ]
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+# gcloud builds submit --config=cloudbuild.yaml .
+
