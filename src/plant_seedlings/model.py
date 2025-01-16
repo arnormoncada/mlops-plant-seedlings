@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 import timm
-from timm import create_model
 # import pytorch_lightning  as pl
 
 
@@ -14,7 +13,11 @@ class timm_model():
                  ) -> None:
         super().__init__()
 
-        self.model = create_model(model_name, pretrained=True, num_classes=num_classes)
+        self.model = timm.create_model(model_name, pretrained=True, num_classes=num_classes)
+        # Freeze all layers except the final layer
+        for param in self.model.parameters():
+            param.requires_grad = False
+        self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
 
     def forward(self, x):
         x = self.model(x)
