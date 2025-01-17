@@ -40,7 +40,9 @@ steps:
     'europe-west1',
     '--platform',
     'managed',
-    '--allow-unauthenticated'
+    '--allow-unauthenticated',
+    '--memory',
+    '1Gi',
   ]
 
 options:

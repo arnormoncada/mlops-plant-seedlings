@@ -15,6 +15,6 @@ WORKDIR /
 RUN pip install -r requirements.txt --no-cache-dir --verbose
 RUN pip install . --no-deps --no-cache-dir --verbose
 
-ENTRYPOINT ["uvicorn", "src.plant_seedlings.api:app", "--host", "0.0.0.0", "--port", "80"]
+ENTRYPOINT ["sh", "-c", "uvicorn src.plant_seedlings.api:app --host 0.0.0.0 --port $PORT"]
 # docker build -f dockerfiles/api.dockerfile . -t seedlings_app:latest
-# docker run -p 8000:80 seedlings_app:latest
+# docker run -p 8000:8000 -e PORT=8000 seedlings_app:latest

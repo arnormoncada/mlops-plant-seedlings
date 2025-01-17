@@ -7,17 +7,6 @@ PROJECT_NAME = "plant_seedlings"
 PYTHON_VERSION = "3.12"
 
 
-# Setup commands
-@task
-def create_environment(ctx: Context) -> None:
-    """Create a new conda environment for project."""
-    ctx.run(
-        f"conda create --name {PROJECT_NAME} python={PYTHON_VERSION} pip --no-default-packages --yes",
-        echo=True,
-        pty=not WINDOWS,
-    )
-
-
 @task
 def requirements(ctx: Context) -> None:
     """Install project requirements."""
@@ -30,13 +19,6 @@ def requirements(ctx: Context) -> None:
 def dev_requirements(ctx: Context) -> None:
     """Install development requirements."""
     ctx.run('pip install -e .["dev"]', echo=True, pty=not WINDOWS)
-
-
-# Project commands
-@task
-def preprocess_data(ctx: Context) -> None:
-    """Preprocess data."""
-    ctx.run(f"python src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
 
 
 @task
@@ -76,3 +58,9 @@ def build_docs(ctx: Context) -> None:
 def serve_docs(ctx: Context) -> None:
     """Serve documentation."""
     ctx.run("mkdocs serve --config-file docs/mkdocs.yaml", echo=True, pty=not WINDOWS)
+
+# Launch api
+@task
+def api(ctx: Context, port: int = 8000) -> None:
+    """Launches the model api."""
+    ctx.run(f"uvicorn src.plant_seedlings.api:app --host 0.0.0.0 --port {port}")
