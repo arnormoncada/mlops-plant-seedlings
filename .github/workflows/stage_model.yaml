@@ -3,7 +3,12 @@ name: Check staged model
 on:
   repository_dispatch:
     types: staged_model
-
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 jobs:
   identify_event:
     runs-on: ubuntu-latest

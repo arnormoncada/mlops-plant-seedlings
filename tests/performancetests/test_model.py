@@ -8,9 +8,14 @@ import hydra
 from hydra import compose, initialize
 from omegaconf import OmegaConf
 from dotenv import load_dotenv
-
+import pytest
 # TODO: Add test for resnet model
 
+
+@pytest.fixture
+def model():
+    artifact_name = os.getenv("MODEL_ENTITY")
+    return download_and_load_model(artifact_name)
 
 def download_and_load_model(artifact_name: str, logdir="models/"):
     """
