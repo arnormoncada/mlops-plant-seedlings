@@ -38,7 +38,7 @@ jobs:
       - name: Get deployment timestamp
         run: |
           # Get the timestamp of the last deployment
-          DEPLOYMENT_TIMESTAMP=$(gcloud run services describe plant-seedlings \
+          DEPLOYMENT_TIMESTAMP=$(gcloud run services describe plant-seedlings-api \
             --region=europe-west1 \
             --format="value(metadata.creationTimestamp)")
           echo "Last deployment timestamp: $DEPLOYMENT_TIMESTAMP"
