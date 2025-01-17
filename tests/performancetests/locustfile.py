@@ -17,14 +17,18 @@ class MyUser(HttpUser):
     def get_models(self) -> None:
         """A task that simulates a user visiting the /models endpoint of the FastAPI app."""
         self.client.get(f"/models")
-    
+
     @task(5)
     def predict_custom(self) -> None:
         """A task that simulates a user making a prediction using the custom model."""
-        self.client.post("/predict?model=custom", files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")})
+        self.client.post(
+            "/predict?model=custom", files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")}
+        )
 
     @task(5)
     def predict_mobilenet(self) -> None:
         """A task that simulates a user making a prediction using the mobilenet model."""
-        self.client.post("/predict?model=mobilenet", files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")})
-    
+        self.client.post(
+            "/predict?model=mobilenet",
+            files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")},
+        )

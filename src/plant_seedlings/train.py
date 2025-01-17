@@ -4,6 +4,7 @@ import typer
 from data import plant_seedlings
 import os
 from dotenv import load_dotenv
+
 # from model import MyAwesomeModel
 import hydra
 import typer.completion
@@ -31,7 +32,7 @@ app = typer.Typer()
 @app.command()
 def train() -> None:
     """Train a model on MNIST."""
-    
+
     print("Training day and night")
     DEVICE = torch.device(
         "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
@@ -39,7 +40,7 @@ def train() -> None:
 
     with initialize(config_path="../../configs", version_base="1.3"):
         cfg = compose(config_name="config.yaml")
-    
+
     print(OmegaConf.to_yaml(cfg))
 
     hparams = cfg.training
@@ -130,7 +131,7 @@ def train() -> None:
     model_name = OmegaConf.select(cfg, "models.model_name")
     if model_name is None:
         model_name = "custom"
-    
+
     model_path_and_name = hparams["model_path"] + model_name + ".pth"
     torch.save(model.state_dict(), model_path_and_name)
     # artifact = wandb.Artifact(
