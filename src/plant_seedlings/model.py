@@ -1,8 +1,6 @@
 import torch
 from torch import nn
 import timm
-# import pytorch_lightning  as pl
-
 
 class timm_model(nn.Module):
     """Simple resnet model fetched from timm."""
@@ -18,7 +16,14 @@ class timm_model(nn.Module):
         # Freeze all layers except the final layer
         for param in self.model.parameters():
             param.requires_grad = False
-        self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+        
+        # Modify last layer based on model architecture
+        if hasattr(self.model, "fc"): # E.g. resnet
+            self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+        elif hasattr(self.model, "classifier"): # E.g. mobilenet
+            self.model.classifier = nn.Linear(self.model.classifier.in_features, num_classes)
+        else:
+            raise ValueError(f"Model {model_name} does not have a fc or classifier attribute.")
 
 
     def forward(self, x):
@@ -57,14 +62,3 @@ class MyAwesomeModel(nn.Module):
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
 
-
-if __name__ == "__main__":
-    model = MyAwesomeModel()
-    print(f"Model architecture: {model}")
-    print(f"Number of parameters: {sum(p.numel() for p in model.parameters())}")
-
-    dummy_input = torch.randn(1, 3, 224, 224)
-    output = model(dummy_input)
-    print(f"Output shape: {output.shape}")
-
-    print(timm.list_models("mobilenet*"))
