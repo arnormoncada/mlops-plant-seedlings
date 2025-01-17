@@ -64,16 +64,16 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Run load test on deployed model
         env:
           DEPLOYED_MODEL_URL: ${{ env.DEPLOYED_MODEL_URL }}
         run: |
           locust -f tests/performancetests/locustfile.py \
-            --headless -u 100 -r 10 --run-time 10m --host=$DEPLOYED_MODEL_URL --csv=/locust/results
+            --headless -u 100 -r 10 --run-time 10m --host=$DEPLOYED_MODEL_URL --csv=/locust_result/results
 
       - name: Upload locust results
         uses: actions/upload-artifact@v4
         with:
           name: locust-results
-          path: /locust
+          path: /locust_result
