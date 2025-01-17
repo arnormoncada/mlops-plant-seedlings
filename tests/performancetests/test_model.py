@@ -14,6 +14,11 @@ import pytest
 
 @pytest.fixture
 def model():
+    wandb_api_key = os.getenv("WANDB_API_KEY")
+    if not wandb_api_key:
+        raise ValueError("WANDB_API_KEY not found in the environment. Check your .env file.")
+    wandb.login(key=wandb_api_key)
+
     artifact_name = os.getenv("MODEL_ENTITY")
     return download_and_load_model(artifact_name)
 
