@@ -2,6 +2,7 @@ import torch
 from torch import nn
 import timm
 
+
 class timm_model(nn.Module):
     """Simple resnet model fetched from timm."""
 
@@ -16,21 +17,20 @@ class timm_model(nn.Module):
         # Freeze all layers except the final layer
         for param in self.model.parameters():
             param.requires_grad = False
-        
+
         # Modify last layer based on model architecture
-        if hasattr(self.model, "fc"): # E.g. resnet
+        if hasattr(self.model, "fc"):  # E.g. resnet
             self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
-        elif hasattr(self.model, "classifier"): # E.g. mobilenet
+        elif hasattr(self.model, "classifier"):  # E.g. mobilenet
             self.model.classifier = nn.Linear(self.model.classifier.in_features, num_classes)
         else:
             raise ValueError(f"Model {model_name} does not have a fc or classifier attribute.")
 
-
     def forward(self, x):
         x = self.model(x)
         return x
-    
-    def load_state_dict(self, state_dict, strict = True):
+
+    def load_state_dict(self, state_dict, strict=True):
         """Override to load state_dict directly into the inner model."""
         self.model.load_state_dict(state_dict, strict)
 
@@ -61,4 +61,3 @@ class MyAwesomeModel(nn.Module):
         # print(x.shape)
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
-
