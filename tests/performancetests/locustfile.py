@@ -1,4 +1,3 @@
-import random
 
 from locust import HttpUser, between, task
 
@@ -16,7 +15,7 @@ class MyUser(HttpUser):
     @task(3)
     def get_models(self) -> None:
         """A task that simulates a user visiting the /models endpoint of the FastAPI app."""
-        self.client.get(f"/models")
+        self.client.get("/models")
 
     @task(5)
     def predict_custom(self) -> None:
