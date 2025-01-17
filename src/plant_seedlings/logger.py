@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 from loguru import logger
 
+
 def setup_logger(
     log_dir: str,
     filename: str,
@@ -24,14 +25,14 @@ def setup_logger(
     # Optionally remove any default sinks if you want full control:
     # logger.remove()
 
-    #File sink 
+    # File sink
     logger.add(
         log_file_path,
         rotation=rotation,
         retention=retention,
         level=level,
         backtrace=backtrace,
-        diagnose=True,  
+        diagnose=True,
         colorize=False,
     )
 

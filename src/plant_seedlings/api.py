@@ -62,7 +62,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 async def root():
-    """ Health check."""
+    """Health check."""
     response = {
         "message": HTTPStatus.OK.phrase,
         "status-code": HTTPStatus.OK,

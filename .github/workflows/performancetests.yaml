@@ -1,0 +1,76 @@
+name: GCP Load Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-load-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Auth with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Install locust
+        run: pip install locust
+
+      - name: Extract deployed model URL
+        run: |
+          DEPLOYED_MODEL_URL=$(gcloud run services describe plant-seedlings-api \
+            --region=europe-west1 \
+            --format='value(status.url)')
+          echo "DEPLOYED_MODEL_URL=$DEPLOYED_MODEL_URL" >> $GITHUB_ENV
+
+      - name: Wait for service to be ready
+        run: |
+          while ! curl -s $DEPLOYED_MODEL_URL; do
+            echo "Waiting for the service to be ready..."
+            sleep 10
+          done
+      
+      - name: Get deployment timestamp
+        run: |
+          # Get the timestamp of the last deployment
+          DEPLOYMENT_TIMESTAMP=$(gcloud run services describe plant-seedlings-api \
+            --region=europe-west1 \
+            --format="value(metadata.creationTimestamp)")
+          echo "Last deployment timestamp: $DEPLOYMENT_TIMESTAMP"
+          
+          # Get the current time in the same format (ISO 8601)
+          CURRENT_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ")
+          echo "Current time: $CURRENT_TIME"
+
+          # Calculate the time difference (in minutes)
+          DEPLOYMENT_TIME=$(date --date="$DEPLOYMENT_TIMESTAMP" +%s)
+          CURRENT_TIME_IN_SECONDS=$(date --date="$CURRENT_TIME" +%s)
+          TIME_DIFF=$(( (CURRENT_TIME_IN_SECONDS - DEPLOYMENT_TIME) / 60 ))
+
+          echo "Time since last deployment: $TIME_DIFF minutes"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run load test on deployed model
+        env:
+          DEPLOYED_MODEL_URL: ${{ env.DEPLOYED_MODEL_URL }}
+        run: |
+          locust -f tests/performancetests/locustfile.py \
+            --headless -u 100 -r 10 --run-time 6m --host=$DEPLOYED_MODEL_URL --csv=/tmp/locust/results
+
+      - name: Upload locust results
+        uses: actions/upload-artifact@v4
+        with:
+          name: locust-results
+          path: /tmp/locust/

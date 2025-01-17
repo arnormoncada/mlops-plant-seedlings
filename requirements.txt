@@ -102,6 +102,7 @@ jupyter_core==5.7.2
 jupyterlab_pygments==0.3.0
 kiwisolver==1.4.8
 kombu==5.4.2
+locust==2.32.6  
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2

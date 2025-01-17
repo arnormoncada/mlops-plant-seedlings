@@ -5,6 +5,7 @@ from loguru import logger
 # Import your custom logger setup
 from plant_seedlings.logger import setup_logger
 
+
 @hydra.main(version_base="1.2", config_path="../../configs", config_name="config")
 def main(cfg: DictConfig):
     """
@@ -20,8 +21,8 @@ def main(cfg: DictConfig):
         rotation=cfg.logging.rotation,
         retention=cfg.logging.retention,
         level=cfg.logging.level,
-        backtrace=cfg.logging.backtrace,    # <--- new
-        colorize=cfg.logging.colorize,      # <--- new
+        backtrace=cfg.logging.backtrace,  # <--- new
+        colorize=cfg.logging.colorize,  # <--- new
     )
 
     # Now all logger messages go to the file + console sinks we configured above.

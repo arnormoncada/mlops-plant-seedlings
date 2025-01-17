@@ -10,6 +10,7 @@ from src.plant_seedlings.data import plant_seedlings
 DATA_LEN = 5539
 NUM_CLASSES = 12
 
+
 @pytest.mark.skipif(not os.path.exists("data/processed"), reason="Data not downloaded")
 def test_my_dataset():
     """Test the MyDataset class."""
