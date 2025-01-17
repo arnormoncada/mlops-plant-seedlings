@@ -57,7 +57,7 @@ def test_model_speed(model) -> float:
 if __name__ == "__main__":
     # 1. Load environment variables from .env
     # path to the .env file
-    dotenv_path = Path(__file__).parents[1] / ".env"
+    dotenv_path = Path(__file__).parents[2] / ".env"
     load_dotenv(dotenv_path)
 
     # 2. Log in to W&B using the key from .env
