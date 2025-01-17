@@ -8,12 +8,7 @@ on:
 jobs:
   pre-commit:
     name: Check pre-commit
-    runs-on: ${{ matrix.operating-system }}
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: ["ubuntu-latest", "windows-latest", "macos-latest"]
-        python-version: ["3.11", "3.12"]
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write
