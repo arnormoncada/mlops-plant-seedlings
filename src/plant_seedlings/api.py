@@ -50,6 +50,8 @@ async def lifespan(app: FastAPI):
 
 
 class ModelEnum(Enum):
+    # If you add any new model, be sure to add it to the api test as well.
+    # Remember the test is order-sensitive
     custom = "custom"
     resnet = "resnet"
     mobilenet = "mobilenet"
