@@ -57,7 +57,6 @@ class ModelEnum(Enum):
     mobilenet = "mobilenet"
 
 
-
 app = FastAPI(lifespan=lifespan)
 
 

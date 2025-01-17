@@ -66,7 +66,7 @@ jobs:
         env:
           DEPLOYED_MODEL_URL: ${{ env.DEPLOYED_MODEL_URL }}
         run: |
-          locust -f tests/performance/locustfile.py \
+          locust -f tests/performancetests/locustfile.py \
             --headless -u 100 -r 10 --run-time 10m --host=$DEPLOYED_MODEL_URL --csv=/locust/results
 
       - name: Upload locust results

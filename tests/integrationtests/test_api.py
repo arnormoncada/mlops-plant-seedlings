@@ -24,7 +24,6 @@ def test_read_models():
         assert response.json() == {"models": ["custom", "resnet", "mobilenet"]}
 
 
-
 def validate_predict_response(response: Dict[str, str]) -> None:
     """helper function to validate the predict"""
     assert isinstance(response, dict)  # Check if response is a dictionary

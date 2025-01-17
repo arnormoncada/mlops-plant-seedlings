@@ -54,8 +54,12 @@ def train() -> None:
 
     run = wandb.init(
         project="Test_DeleteLater",
-        config={"lr": cfg.optimizer["lr"], "batch_size": hparams["batch_size"], "epochs": hparams["epochs"],
-                "model": model_name}
+        config={
+            "lr": cfg.optimizer["lr"],
+            "batch_size": hparams["batch_size"],
+            "epochs": hparams["epochs"],
+            "model": model_name,
+        },
     )
     print("wandb run name: ", run.name)
     run_version = run.name.split("-")[-1]
