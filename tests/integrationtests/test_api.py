@@ -48,3 +48,12 @@ def test_predict_mobilenet():
         )
         assert response.status_code == 200
         validate_predict_response(response.json())
+
+def test_predict_resnet():
+    with TestClient(app) as client:
+        response = client.post(
+            "/predict?model=resnet",
+            files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")},
+        )
+        assert response.status_code == 200
+        validate_predict_response(response.json())

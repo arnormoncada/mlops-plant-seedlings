@@ -31,3 +31,10 @@ class MyUser(HttpUser):
             "/predict?model=mobilenet",
             files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")},
         )
+    @task(5)
+    def predict_resnet(self) -> None:
+        """A task that simulates a user making a prediction using the resnet model."""
+        self.client.post(
+            "/predict?model=resnet",
+            files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")},
+        )

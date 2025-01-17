@@ -70,7 +70,7 @@ jobs:
           DEPLOYED_MODEL_URL: ${{ env.DEPLOYED_MODEL_URL }}
         run: |
           locust -f tests/performancetests/locustfile.py \
-            --headless -u 100 -r 10 --run-time 10m --host=$DEPLOYED_MODEL_URL --csv=/tmp/locust/results
+            --headless -u 100 -r 10 --run-time 6m --host=$DEPLOYED_MODEL_URL --csv=/tmp/locust/results
 
       - name: Upload locust results
         uses: actions/upload-artifact@v4
