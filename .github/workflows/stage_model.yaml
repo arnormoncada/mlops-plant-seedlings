@@ -1,11 +1,11 @@
 name: Check staged model
 
 on:
-  #repository_dispatch:
-  #  types: staged_model
+  repository_dispatch:
+    types: staged_model
   push:
     branches:
-      - main
+      - workflow/modelreg
   pull_request:
     branches:
       - main
