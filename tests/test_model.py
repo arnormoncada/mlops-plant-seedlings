@@ -3,13 +3,10 @@ import os
 import time
 import torch
 import wandb
-
-# Hydra + OmegaConf
+from pathlib import Path 
 import hydra
 from hydra import compose, initialize
 from omegaconf import OmegaConf
-
-# dotenv for loading environment variables from .env
 from dotenv import load_dotenv
 
 # TODO: Add test for resnet model

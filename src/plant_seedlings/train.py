@@ -4,16 +4,13 @@ import typer
 from data import plant_seedlings
 import os
 from dotenv import load_dotenv
-
-# from model import MyAwesomeModel
 import hydra
 import typer.completion
 import wandb
 from hydra import compose, initialize
 from omegaconf import OmegaConf
 from pathlib import Path
-
-from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 # from time import time
 
 # path to the .env file
