@@ -1,4 +1,4 @@
-#from src.plant_seedlings.model import MyAwesomeModel
+# from src.plant_seedlings.model import MyAwesomeModel
 import os
 import time
 import torch
@@ -13,6 +13,7 @@ from omegaconf import OmegaConf
 from dotenv import load_dotenv
 
 # TODO: Add test for resnet model
+
 
 def download_and_load_model(artifact_name: str, logdir="models/"):
     """

@@ -59,6 +59,7 @@ def serve_docs(ctx: Context) -> None:
     """Serve documentation."""
     ctx.run("mkdocs serve --config-file docs/mkdocs.yaml", echo=True, pty=not WINDOWS)
 
+
 # Launch api
 @task
 def api(ctx: Context, port: int = 8000) -> None:

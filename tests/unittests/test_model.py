@@ -2,7 +2,10 @@ from src.plant_seedlings.model import MyAwesomeModel, timm_model
 import torch
 import pytest
 
-@pytest.mark.parametrize("models", [MyAwesomeModel(), timm_model("mobilenetv3_small_050", 12), timm_model("resnet18", 12)])
+
+@pytest.mark.parametrize(
+    "models", [MyAwesomeModel(), timm_model("mobilenetv3_small_050", 12), timm_model("resnet18", 12)]
+)
 def test_custom_model(models):
     """Test the available models."""
     model = models
@@ -12,4 +15,3 @@ def test_custom_model(models):
 
     # Assert that the output has the correct shape
     assert out.shape == (32, 12), f"Expected output shape (32, 12), but got {out.shape}"
-
