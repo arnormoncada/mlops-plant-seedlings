@@ -21,9 +21,12 @@ async def lifespan(app: FastAPI):
 
         # Load the models and set weights
         custom_model = MyAwesomeModel()
-        custom_model.load_state_dict(torch.load("models/custom.pth"))
+        custom_model.load_state_dict(torch.load("models/custom/custom.pth"))
         mobile_net = timm_model("mobilenetv3_small_050", 12)
-        mobile_net.load_state_dict(torch.load("models/mobilenetv3_small_050.pth"))
+        mobile_net.load_state_dict(torch.load("models/mobilenetv3_small_050/mobilenetv3_small_050_30.pth"))
+        resnet = timm_model("resnet18", 12)
+        resnet.load_state_dict(torch.load("models/resnet18/resnet18_28.pth"))
+        # TODO: add new model here
 
         # Set the device
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -47,8 +50,12 @@ async def lifespan(app: FastAPI):
 
 
 class ModelEnum(Enum):
+    # If you add any new model, be sure to add it to the api test as well.
+    # Remember the test is order-sensitive
     custom = "custom"
-    resnet = "mobilenet"
+    resnet = "resnet"
+    mobilenet = "mobilenet"
+
 
 
 app = FastAPI(lifespan=lifespan)

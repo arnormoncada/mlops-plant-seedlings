@@ -21,7 +21,8 @@ def test_read_models():
     with TestClient(app) as client:
         response = client.get("/models")
         assert response.status_code == 200
-        assert response.json() == {"models": ["custom", "mobilenet"]}
+        assert response.json() == {"models": ["custom", "resnet", "mobilenet"]}
+
 
 
 def validate_predict_response(response: Dict[str, str]) -> None:
