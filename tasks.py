@@ -32,6 +32,7 @@ def test(ctx: Context) -> None:
     """Run tests."""
     ctx.run("coverage run -m pytest tests/", echo=True, pty=not WINDOWS)
     ctx.run("coverage report -m", echo=True, pty=not WINDOWS)
+    ctx.run("coverage html", echo=True, pty=not WINDOWS)
 
 
 @task
@@ -64,3 +65,10 @@ def serve_docs(ctx: Context) -> None:
 def api(ctx: Context, port: int = 8000) -> None:
     """Launches the model api."""
     ctx.run(f"uvicorn src.plant_seedlings.api:app --host 0.0.0.0 --port {port}")
+
+# Launch locust
+@task
+def locust(ctx: Context, api_url: str = "http://localhost:8000") -> None:
+    """Launches the locust performance test."""
+    ctx.run("locust -f tests/performancetests/locustfile.py \
+    --headless --users 10 --spawn-rate 1 --run-time 1m --host http://localhost:8000/")
