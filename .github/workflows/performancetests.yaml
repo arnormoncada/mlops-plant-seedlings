@@ -21,9 +21,6 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: setup Python
         uses: actions/setup-python@v2
         with:
