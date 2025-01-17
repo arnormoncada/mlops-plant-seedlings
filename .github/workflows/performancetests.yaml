@@ -62,6 +62,9 @@ jobs:
 
           echo "Time since last deployment: $TIME_DIFF minutes"
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Run load test on deployed model
         env:
           DEPLOYED_MODEL_URL: ${{ env.DEPLOYED_MODEL_URL }}
