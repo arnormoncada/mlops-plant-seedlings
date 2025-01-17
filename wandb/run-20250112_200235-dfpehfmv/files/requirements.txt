@@ -66,11 +66,11 @@ funcy==2.0
 gdown==5.2.0
 gitdb==4.0.12
 GitPython==3.1.44
-googleapis-common-protos==1.66.0
 google-api-core==2.24.0
 google-api-python-client==2.157.0
 google-auth==2.37.0
 google-auth-httplib2==0.2.0
+googleapis-common-protos==1.66.0
 grandalf==0.8
 grpcio==1.69.0
 gto==1.7.2
@@ -86,9 +86,9 @@ Jinja2==3.1.5
 joblib==1.4.2
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
-jupyterlab_pygments==0.3.0
 jupyter_client==8.6.3
 jupyter_core==5.7.2
+jupyterlab_pygments==0.3.0
 kiwisolver==1.4.8
 kombu==5.4.2
 loguru==0.7.3
@@ -124,8 +124,8 @@ pipreqs==0.5.0
 platformdirs==4.3.6
 prompt_toolkit==3.0.48
 propcache==0.2.1
-protobuf==5.29.2
 proto-plus==1.25.0
+protobuf==5.29.2
 psutil==6.1.1
 ptyprocess==0.7.0
 pure_eval==0.2.3
@@ -183,8 +183,8 @@ threadpoolctl==3.5.0
 tinycss2==1.4.0
 tomlkit==0.13.2
 torch==2.2.2
-torchvision==0.17.2
 torch-tb-profiler==0.4.3
+torchvision==0.17.2
 tornado==6.4.2
 tqdm==4.67.1
 traitlets==5.14.3
