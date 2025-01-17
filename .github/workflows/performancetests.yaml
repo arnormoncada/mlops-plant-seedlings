@@ -20,6 +20,16 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+      
+      - name: setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: setup.py
+
+      - name: Install locust
+        run: pip install locust
 
       - name: Extract deployed model URL
         run: |
