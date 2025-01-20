@@ -66,7 +66,15 @@ def train() -> None:
     run.name = f"{model_name}_{run_version}"
     print("wandb new run name: ", run.name)
 
-    train_dataloader, val_dataloader = plant_seedlings(data_path="data/processed")
+    
+    train_dataloader, _ = plant_seedlings(data_path="data/processed")
+    
+    # split the train_dataloader into train and validation with 90/10 split
+    train_size = int(0.9 * len(train_dataloader.dataset))
+    val_size = len(train_dataloader.dataset) - train_size
+    train_dataloader, val_dataloader = torch.utils.data.random_split(train_dataloader, [train_size, val_size])
+
+    
 
     print("Number of training images: ", len(train_dataloader.dataset))
     loss_fn = torch.nn.CrossEntropyLoss()
