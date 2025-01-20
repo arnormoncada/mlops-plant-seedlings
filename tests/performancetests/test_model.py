@@ -80,6 +80,10 @@ def test_model_speed(model):
     """
     Test the inference speed of the model.
     """
+    if model is None:
+        pytest.skip("Skipping test because model could not be loaded due to missing WANDB_API_KEY or MODEL_ENTITY.")
+        return
+    
     start = time.time()
     with torch.no_grad():
         for _ in range(100):
@@ -120,13 +124,3 @@ if __name__ == "__main__":
         wandb.finish()
     else:
         print("[WARN] Skipping model test because environment variables are missing.")
-
-# def test_custom_model():
-#     """Test the CustomModel class."""
-#     model = MyAwesomeModel()
-
-#     x = torch.randn(32, 3, 224, 224)
-#     out = model(x)
-
-#     # Assert that the output has the correct shape
-#     assert out.shape == (32, 12), f"Expected output shape (32, 12), but got {out.shape}"
