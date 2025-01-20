@@ -16,7 +16,9 @@ import pytest
 def model():
     wandb_api_key = os.getenv("WANDB_API_KEY")
     if not wandb_api_key:
-        raise ValueError("WANDB_API_KEY not found in the environment. Check your .env file.")
+        print("WANDB_API_KEY not found in the environment. Skipping W&B login.")
+        return None
+
     wandb.login(key=wandb_api_key)
 
     artifact_name = os.getenv("MODEL_ENTITY")
@@ -56,6 +58,10 @@ def test_model_speed(model) -> float:
     """
     Perform a simple inference time test on the model and return elapsed time.
     """
+    if model is None:
+        pytest.skip("Skipping test because model could not be loaded due to missing WANDB_API_KEY.")
+        return
+    
     start = time.time()
     with torch.no_grad():
         for _ in range(100):
@@ -73,8 +79,9 @@ if __name__ == "__main__":
     # 2. Log in to W&B using the key from .env
     wandb_api_key = os.getenv("WANDB_API_KEY")
     if not wandb_api_key:
-        raise ValueError("WANDB_API_KEY not found in the environment. Check your .env file.")
-    wandb.login(key=wandb_api_key)
+        print("WANDB_API_KEY not found in the environment. Skipping W&B login.")
+    else:
+        wandb.login(key=wandb_api_key)
 
     # 3. Get the artifact name from env var or default
     artifact_name = os.getenv("MODEL_ENTITY")
@@ -87,9 +94,10 @@ if __name__ == "__main__":
     print(f"[INFO] Inference time for 100 runs: {elapsed:.4f}s")
 
     # 6. Log the result to W&B
-    wandb.init(project="Test_DeleteLater", job_type="test")
-    wandb.log({"test_elapsed_time": elapsed})
-    wandb.finish()
+    if wandb_api_key:
+        wandb.init(project="Test_DeleteLater", job_type="test")
+        wandb.log({"test_elapsed_time": elapsed})
+        wandb.finish()
 
 # def test_custom_model():
 #     """Test the CustomModel class."""
