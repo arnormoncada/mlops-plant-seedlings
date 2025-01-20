@@ -45,7 +45,8 @@ def train() -> None:
     hparams = cfg.training
     model = hydra.utils.instantiate(cfg.models).to(DEVICE)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
-    print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
+    torch.manual_seed(hparams['seed'])
+    print("lr = {}, batch_size = {}, epochs = {}, seed = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"], hparams["seed"]))
 
     # first we save the model to a file and then log it to wandb as an artifact
     model_name = OmegaConf.select(cfg, "models.model_name")

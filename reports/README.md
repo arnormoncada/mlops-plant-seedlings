@@ -243,7 +243,7 @@ In total we have impleted 8 test functions. 6 of these are api tests, 1 is a mod
 >
 > Answer:
 
---- question 9 fill here ---
+We made use of both branches and PRs in our project. No one had their own branch, but made a branch and named it according to what feature they were implementing. In hindsight, dedicating one branch to each member might have been a smart move, to reduce the amount of "i forgot to delete my branch after a successfull PR". After we did a PR, we typically (if it was a larger or more important PR) send a message in slack describing what changes we have done, and if anyone should be aware of some of these changes (eg. some of the code now depends on the tests completing, so if your code doesn't complete the tests, something have probably been broken).
 
 ### Question 10
 
@@ -294,7 +294,7 @@ In total we have impleted 8 test functions. 6 of these are api tests, 1 is a mod
 >
 > Answer:
 
---- question 12 fill here ---
+We made use of config files. Before running an experiment, one had to be sure the correct config files was chosen in the config.yaml file. In our setup, you could only change what model to use, but in theory we could have setup multiple optimizers or training configurations.
 
 ### Question 13
 
@@ -309,7 +309,7 @@ In total we have impleted 8 test functions. 6 of these are api tests, 1 is a mod
 >
 > Answer:
 
---- question 13 fill here ---
+We made use of config files. Whenever an experiment is run, multiple print statements are run, which prints the contents of the config files, so that you early on can catch if that indeed was the experiment you inteded to run. We also used seeding to make the training as reproducible as possible.
 
 ### Question 14
 
