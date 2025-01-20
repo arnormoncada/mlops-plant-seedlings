@@ -84,13 +84,15 @@ if __name__ == "__main__":
         wandb.login(key=wandb_api_key)
 
     # 3. Get the artifact name from env var or default
-    artifact_name = os.getenv("MODEL_ENTITY")
+    #artifact_name = os.getenv("MODEL_ENTITY") use_artifact('s232735-danmarks-tekniske-universitet-dtu-org/wandb-registry-model/test_remove_l8er:v0', type='model')
+    artifact_name = 's232735-danmarks-tekniske-universitet-dtu-org/wandb-registry-model/test_remove_l8er:v0'
+    
     if not artifact_name:
         print("MODEL_ENTITY not found in the environment. Skipping model download.")
         model = None
     else:
         model = download_and_load_model(artifact_name)
-        
+
     # 4. Download & load the model
     model = download_and_load_model(artifact_name)
 
