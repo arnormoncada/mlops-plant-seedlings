@@ -21,7 +21,7 @@ def test_read_models():
     with TestClient(app) as client:
         response = client.get("/models")
         assert response.status_code == 200
-        assert response.json() == {"models": ["custom", "mobilenet"]}
+        assert response.json() == {"models": ["custom", "resnet", "mobilenet"]}
 
 
 def validate_predict_response(response: Dict[str, str]) -> None:
@@ -44,6 +44,16 @@ def test_predict_mobilenet():
     with TestClient(app) as client:
         response = client.post(
             "/predict?model=mobilenet",
+            files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")},
+        )
+        assert response.status_code == 200
+        validate_predict_response(response.json())
+
+
+def test_predict_resnet():
+    with TestClient(app) as client:
+        response = client.post(
+            "/predict?model=resnet",
             files={"file": ("test.jpg", open("tests/support/test_img.png", "rb"), "image/png")},
         )
         assert response.status_code == 200

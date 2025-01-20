@@ -2,15 +2,17 @@ import matplotlib.pyplot as plt
 import torch
 import typer
 from data import plant_seedlings
+from metrics import compute_metrics
 import os
 from dotenv import load_dotenv
+
+# from model import MyAwesomeModel
 import hydra
 import typer.completion
 import wandb
 from hydra import compose, initialize
 from omegaconf import OmegaConf
 from pathlib import Path
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 # from time import time
 
 # path to the .env file
@@ -28,7 +30,7 @@ app = typer.Typer()
 
 @app.command()
 def train() -> None:
-    """Train a model on MNIST."""
+    """Train a model on plant-seedlings."""
 
     print("Training day and night")
     DEVICE = torch.device(
@@ -43,15 +45,36 @@ def train() -> None:
     hparams = cfg.training
     model = hydra.utils.instantiate(cfg.models).to(DEVICE)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
-    print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
+    torch.manual_seed(hparams['seed'])
+    print("lr = {}, batch_size = {}, epochs = {}, seed = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"], hparams["seed"]))
 
-    wandb.init(
-        project="Test_DeleteLater",
-        config={"lr": cfg.optimizer["lr"], "batch_size": hparams["batch_size"], "epochs": hparams["epochs"]},
-        name="run22",
+    # first we save the model to a file and then log it to wandb as an artifact
+    model_name = OmegaConf.select(cfg, "models.model_name")
+    if model_name is None:
+        model_name = "custom"
+
+    run = wandb.init(
+        project="Plant-seedlings",
+        config={
+            "lr": cfg.optimizer["lr"],
+            "batch_size": hparams["batch_size"],
+            "epochs": hparams["epochs"],
+            "model": model_name,
+        },
     )
+    print("wandb project name: ", run.project)
+    print("wandb run name: ", run.name)
+    run_version = run.name.split("-")[-1]
+    run.name = f"{model_name}_{run_version}"
+    print("wandb new run name: ", run.name)
 
+    
     train_dataloader, _ = plant_seedlings(data_path="data/processed")
+    
+    # split the train_dataloader into train and validation with 90/10 split
+    train_size = int(0.9 * len(train_dataloader.dataset))
+    val_size = len(train_dataloader.dataset) - train_size
+    train_dataloader, val_dataloader = torch.utils.data.random_split(train_dataloader, [train_size, val_size])
 
     print("Number of training images: ", len(train_dataloader.dataset))
     loss_fn = torch.nn.CrossEntropyLoss()
@@ -74,12 +97,12 @@ def train() -> None:
             accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
             statistics["train_accuracy"].append(accuracy)
 
-            wandb.log({"train_loss": loss.item(), "train_accuracy": accuracy})
+            run.log({"train_loss": loss.item(), "train_accuracy": accuracy})
 
             preds.append(y_pred.detach().cpu())
             targets.append(target.detach().cpu())
 
-            if i % 100 == 0:
+            if i % (len(train_dataloader) // 5) == 0:
                 print(f"Epoch {epoch+1}, Iteration {i}, Loss: {loss.item()}, Accuracy: {accuracy}")
 
                 # add a plot of the input images
@@ -91,6 +114,17 @@ def train() -> None:
                 # wandb.log({"gradients": wandb.Histogram(grads)})
             # if i >= 5:
             #     break
+        else:
+            # Add validation loop
+            model.eval()
+            with torch.no_grad():
+                for j, (img, target) in enumerate(val_dataloader):
+                    img, target = img.to(DEVICE), target.to(DEVICE)
+                    y_pred = model(img)
+
+                    test_loss = loss_fn(y_pred, target)
+                    accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
+                    run.log({"val_loss": test_loss.item(), "val_accuracy": accuracy})
         # add a custom matplotlib plot of the ROC curves
         preds = torch.cat(preds, 0)
         targets = torch.cat(targets, 0)
@@ -119,27 +153,27 @@ def train() -> None:
     axs[1].set_title("Train accuracy")
     fig.savefig(hparams["fig_path"])
 
-    final_accuracy = accuracy_score(targets, preds.argmax(dim=1))
-    final_precision = precision_score(targets, preds.argmax(dim=1), average="weighted")
-    final_recall = recall_score(targets, preds.argmax(dim=1), average="weighted")
-    final_f1 = f1_score(targets, preds.argmax(dim=1), average="weighted")
+    metrics = compute_metrics(targets, preds)
+    run.summary["final_accuracy"] = metrics["accuracy"]
+    run.summary["final_precision"] = metrics["precision"]
+    run.summary["final_recall"] = metrics["recall"]
+    run.summary["final_f1"] = metrics["f1"]
 
-    # first we save the model to a file and then log it to wandb as an artifact
-    model_name = OmegaConf.select(cfg, "models.model_name")
-    if model_name is None:
-        model_name = "custom"
-
-    print(hparams["model_path"])
-    model_path_and_name = hparams["model_path"] + model_name + ".pth"
+    # model_path_and_name = hparams["model_path"] + model_name + ".pth"
+    model_path_and_name = hparams["model_path"] + model_name + f"/{run.name}" + ".pth"
+    print(f"Saving model at {model_path_and_name}")
     torch.save(model.state_dict(), model_path_and_name)
+
     artifact = wandb.Artifact(
-        name="corrupt_mnist_model",
+        name=f"{model_name}",
         type="model",
-        description="A model trained to classify corrupt MNIST images",
-        metadata={"accuracy": final_accuracy, "precision": final_precision, "recall": final_recall, "f1": final_f1},
+        description="A model trained to classify plant seedlings images",
+        metadata={"accuracy": metrics["accuracy"], "precision": metrics["precision"], "recall": metrics["recall"]},
     )
+    print("Adding artifact")
     artifact.add_file(model_path_and_name)
-    wandb.log_artifact(artifact)
+    run.log_artifact(artifact)
+    print("Done!")
 
 
 if __name__ == "__main__":
