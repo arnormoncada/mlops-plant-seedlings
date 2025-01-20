@@ -129,7 +129,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 2 fill here ---
+s241645 s242766 s232735 s204225 s204218
 
 ### Question 3
 > **A requirement to the project is that you include a third-party package not covered in the course. What framework**
@@ -143,7 +143,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 3 fill here ---
+We used the third-party framework PyTorch Image Models (TIMM) in our project. We primarily used the "create_model" function to easily get a pre-trained model which we could transfer learn on our dataset. We chose to go with a smaller mobilenet_v3_050 model and a somewhat larger (but still relatively small so everything could be run locally on everyones computer) resnet18 model. We tried the resnet50 model, but one of our group members computer crashed when trying to run the train.py script. This was an easy way to get some different image models which we could compare with our own simple CNN. 
 
 ## Coding environment
 
@@ -179,7 +179,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 5 fill here ---
+From the cookiecutter template we have filled out the .github, configs, data, dockerfiles, (docs), models, reports, src, tests folder. We have removed the notebooks (and docs) folder, since we didn't use any noteboooks. We have added a .dvc folder, so we can utilize the functionalities from dvc. But we have mostly stayed within the lines of the cookiecutter template.
 
 ### Question 6
 
@@ -213,7 +213,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 7 fill here ---
+In total we have impleted 8 test functions. 6 of these are api tests, 1 is a model test and 1 is a data test. The most important api test, are those that test the predict "method" returns the expected json format. The model test simply tests if the output is of the expected size. The data test tests for the size and shape of the dataset, the number of classes and that every class is represented.
 
 ### Question 8
 

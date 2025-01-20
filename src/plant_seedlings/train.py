@@ -53,7 +53,7 @@ def train() -> None:
         model_name = "custom"
 
     run = wandb.init(
-        project="Test_DeleteLater",
+        project="Plant-seedlings",
         config={
             "lr": cfg.optimizer["lr"],
             "batch_size": hparams["batch_size"],
@@ -61,6 +61,7 @@ def train() -> None:
             "model": model_name,
         },
     )
+    print("wandb project name: ", run.project)
     print("wandb run name: ", run.name)
     run_version = run.name.split("-")[-1]
     run.name = f"{model_name}_{run_version}"
