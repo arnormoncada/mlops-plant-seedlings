@@ -1,4 +1,5 @@
 model_path: "models/"
 fig_path: "reports/figures/training_statistics.png"
 batch_size: 32
-epochs: 1
+epochs: 4
+seed: 42

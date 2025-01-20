@@ -45,7 +45,8 @@ def train() -> None:
     hparams = cfg.training
     model = hydra.utils.instantiate(cfg.models).to(DEVICE)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
-    print("lr = {}, batch_size = {}, epochs = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"]))
+    torch.manual_seed(hparams['seed'])
+    print("lr = {}, batch_size = {}, epochs = {}, seed = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"], hparams["seed"]))
 
     # first we save the model to a file and then log it to wandb as an artifact
     model_name = OmegaConf.select(cfg, "models.model_name")
@@ -53,7 +54,7 @@ def train() -> None:
         model_name = "custom"
 
     run = wandb.init(
-        project="Test_DeleteLater",
+        project="Plant-seedlings",
         config={
             "lr": cfg.optimizer["lr"],
             "batch_size": hparams["batch_size"],
@@ -61,6 +62,7 @@ def train() -> None:
             "model": model_name,
         },
     )
+    print("wandb project name: ", run.project)
     print("wandb run name: ", run.name)
     run_version = run.name.split("-")[-1]
     run.name = f"{model_name}_{run_version}"
@@ -73,8 +75,6 @@ def train() -> None:
     train_size = int(0.9 * len(train_dataloader.dataset))
     val_size = len(train_dataloader.dataset) - train_size
     train_dataloader, val_dataloader = torch.utils.data.random_split(train_dataloader, [train_size, val_size])
-
-    
 
     print("Number of training images: ", len(train_dataloader.dataset))
     loss_fn = torch.nn.CrossEntropyLoss()
