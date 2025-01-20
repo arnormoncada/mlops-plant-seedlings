@@ -24,7 +24,7 @@ jobs:
         id: set_output
         run: |
           echo "model_name=${{ github.event.client_payload.artifact_version_string }}" >> $GITHUB_OUTPUT
-    test_model:
+  test_model:
       runs-on: ubuntu-latest
       needs: identify_event
       env:
