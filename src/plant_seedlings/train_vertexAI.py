@@ -18,7 +18,31 @@ app = typer.Typer()
 
 # @hydra.main(config_path="config", config_name="config.yaml")
 
+def upload_to_storage(bucket_name: str, source_file_path: str, destination_blob_path: str):
+  """Uploads a file to the bucket."""
+  storage_client = storage.Client()
+  bucket = storage_client.bucket(bucket_name)
+  blob = bucket.blob(destination_blob_path)
+  blob.upload_from_filename(source_file_path)
+  print(f'The file {source_file_path} is uploaded to GCP bucket path: {destination_blob_path}')
+  return None
 
+ 
+def test_upload():
+    bucket_name = 'plant-seedling-models'
+    source_file_name = 'models/resnet18/20250121-220146.pth'
+    if os.path.exists(source_file_name):
+        print(f"Credentials file found: {source_file_name}")
+    else:
+        print(f"Credentials file not found: {source_file_name}")
+    destination_blob_name = 'models/20250121-220146.pth'
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    print(f"Uploading file to {bucket}")
+    blob.upload_from_filename(source_file_name)
+    print(f"Uploaded to gs://{bucket_name}/{destination_blob_name}")
+    return None
 
 def upload_blob(bucket_name, source_file_name, destination_blob_name):
     """Upload a file to GCS bucket."""
@@ -112,11 +136,11 @@ def train_VAI() -> None:
     
     # e.g. "gs://my-bucket/my-model-ckpt/model.pt"
     GCS_MODEL_ARTIFACT_URI = f"gs://{BUCKET_NAME}/plant_seedlings_ckpt/model.pt"
-
+    print(f"this is the soultion from chat: {f"models/{os.path.basename(model_path_and_name)}"}")
     upload_blob(
         bucket_name="plant-seedling-models",
         source_file_name=model_path_and_name,
-        destination_blob_name="models"
+        destination_blob_name=model_path_and_name
     )
 
     print(f"Model file uploaded to {GCS_MODEL_ARTIFACT_URI}")
@@ -143,4 +167,17 @@ def train_VAI() -> None:
     print("Resource name:", uploaded_model.resource_name)    
 
 if __name__ == "__main__":
-    typer.run(train_VAI)
+    credentials_path = "dtumlops-447815-e1c2177b8aef.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+
+    # Check if the credentials file exists
+    if os.path.exists(credentials_path):
+        print(f"Credentials file found: {credentials_path}")
+    else:
+        print(f"Credentials file not found: {credentials_path}")
+
+    bucket_name = 'plant-seedling-models'
+    source_file_name = 'models/resnet18/20250121-220146.pth'
+    destination_blob_name = 'models/20250121-220146.pth'
+    upload_to_storage(bucket_name, source_file_name, destination_blob_name)
+    #typer.run(train_VAI)
