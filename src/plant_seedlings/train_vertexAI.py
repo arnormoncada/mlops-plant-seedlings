@@ -13,21 +13,32 @@ from omegaconf import OmegaConf
 from pathlib import Path
 from datetime import datetime
 from torch.utils.data import DataLoader, random_split
-
+from google.cloud import storage
 app = typer.Typer()
 
 # @hydra.main(config_path="config", config_name="config.yaml")
 
 
+
+def upload_blob(bucket_name, source_file_name, destination_blob_name):
+    """Upload a file to GCS bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    print(f"Uploading file to {bucket}")
+    blob = bucket.blob(destination_blob_name)
+    print(f"blob: {blob}")
+    blob.upload_from_filename(source_file_name)
+    print(f"File {source_file_name} uploaded to gs://{bucket_name}/{destination_blob_name}")
+
 @app.command()
 def train_VAI() -> None:
     """Train a model on plant-seedlings."""
 
-    print("Training day and night")
+    print("Training...")
     DEVICE = torch.device(
         "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     )
-
+    print(f"Using device: {DEVICE}")
     with initialize(config_path="../../configs", version_base="1.3"):
         cfg = compose(config_name="config.yaml")
 
@@ -46,13 +57,6 @@ def train_VAI() -> None:
 
     # Load the dataset
     train_dataloader, val_dataloader = plant_seedlings(data_path="data/processed")
-
-
-    # Ensure the dataloaders are correctly loaded
-    print(f"Loaded train dataloader: {train_dataloader}")
-    print(f"Loaded val dataloader: {val_dataloader}")
-    print(f"Number of training images: {len(train_dataloader.dataset)}")
-    print(f"Number of validation images: {len(val_dataloader.dataset)}")
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -94,8 +98,10 @@ def train_VAI() -> None:
 
        
     print("Training complete")
-    torch.save(model.state_dict(), "model.pt")
-    
+    datetime_str = datetime.now().strftime("%Y%m%d-%H%M%S")
+    model_path_and_name = hparams["model_path"] + model_name + f"/{datetime_str}" + ".pth"
+    print(f"Saving model to {model_path_and_name}")
+    torch.save(model.state_dict(), model_path_and_name)
     metrics = compute_metrics(targets, preds)
     print("Final metrics:", metrics)
 
@@ -107,10 +113,12 @@ def train_VAI() -> None:
     # e.g. "gs://my-bucket/my-model-ckpt/model.pt"
     GCS_MODEL_ARTIFACT_URI = f"gs://{BUCKET_NAME}/plant_seedlings_ckpt/model.pt"
 
-    subprocess.run(
-        ["gsutil", "cp", "model.pt", GCS_MODEL_ARTIFACT_URI],
-        check=True
+    upload_blob(
+        bucket_name="plant-seedling-models",
+        source_file_name=model_path_and_name,
+        destination_blob_name="models"
     )
+
     print(f"Model file uploaded to {GCS_MODEL_ARTIFACT_URI}")
 
     # -----------------------------
@@ -119,8 +127,7 @@ def train_VAI() -> None:
     aiplatform.init(project=PROJECT_ID, location=LOCATION)
 
     # Display name can be anything you like:
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    MODEL_DISPLAY_NAME = f"plant-seedlings-model-{timestamp}"
+    MODEL_DISPLAY_NAME = f"plant-seedlings-model-{datetime_str}"
 
     # Provide a container for serving predictions (e.g., built-in PyTorch serving container):
     SERVING_CONTAINER_URI = "us-docker.pkg.dev/vertex-ai/prediction/pytorch-cpu.1-11:latest"
