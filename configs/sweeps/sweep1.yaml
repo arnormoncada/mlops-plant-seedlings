@@ -4,7 +4,7 @@
 program: train.py
 name: resnet_sweep
 project: my_project  # replace with your actual project name
-entity: my_entity    # replace with your actual entity/team name
+entity: DTUGroup14    # replace with your actual entity/team name
 
 metric:
   goal: minimize
