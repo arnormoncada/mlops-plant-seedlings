@@ -7,7 +7,9 @@ import torch
 from .model import MyAwesomeModel, timm_model
 import numpy as np
 import json
-from hydra import compose, initialize
+from torchvision.transforms import Compose, Resize, ToTensor
+from PIL import Image
+# from hydra import compose, initialize
 
 
 @asynccontextmanager
@@ -18,8 +20,9 @@ async def lifespan(app: FastAPI):
 
         print("Loading the models...")
 
-        with initialize(config_path="../../configs", version_base="1.3"):
-            cfg = compose(config_name="config.yaml")
+        #TODO: Fix the hydra issue 
+        # with initialize(config_path="../../configs", version_base="1.3"):
+        #     cfg = compose(config_name="config.yaml")
     
         global custom_model, mobile_net, resnet, custom_model_path, mobile_net_path, resnet_path, device, classes
 
@@ -31,13 +34,11 @@ async def lifespan(app: FastAPI):
         custom_model = MyAwesomeModel()
         custom_model.load_state_dict(torch.load(custom_model_path))
 
-        mobile_net = timm_model("mobilenetv3_small_050", cfg.num_classes)
+        mobile_net = timm_model("mobilenetv3_small_050", 12)
         mobile_net.load_state_dict(torch.load(mobile_net_path))
 
-        resnet = timm_model("resnet18", cfg.num_classes)
+        resnet = timm_model("resnet18", 12)
         resnet.load_state_dict(torch.load(resnet_path))
-        
-            # TODO: add new model here
 
         # Set the device
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -96,14 +97,15 @@ async def predict(model: ModelEnum, file: UploadFile = File(...)):
     np_img = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
 
-    # Resize the image to 224x224
-    img = cv2.resize(img, (224, 224))
+    # convert to RGB
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    # Convert the image to a tensor and normalize
-    # now has shape (1, 3, 224, 224)
-    # Normalization changes the range of pixel values from [0, 255] to [0, 1]
-    img = torch.tensor(img).permute(2, 0, 1).unsqueeze(0).float() / 255.0
-    img = img.to(device)
+    pil_img = Image.fromarray(img)
+
+   # Preprocess the image
+    transform = Compose([Resize((224, 224)), ToTensor()])
+
+    img = transform(pil_img).unsqueeze(0).to(device)
 
     # Select the appropriate model
     if model == ModelEnum.custom:

@@ -5,6 +5,7 @@ from typing import Dict
 # Define expected response structure
 predict_response_structure: Dict[str, type] = {
     "class": str,
+    "model": str,
 }
 
 # client = TestClient(app)
@@ -29,6 +30,7 @@ def validate_predict_response(response: Dict[str, str]) -> None:
     assert isinstance(response, dict)  # Check if response is a dictionary
     assert set(response.keys()) == set(predict_response_structure.keys())  # Check if response has the correct keys
     assert isinstance(response["class"], str)  # Check if the class is a string
+    assert isinstance(response["model"], str)  # Check if the model is a string
 
 
 def test_predict_custom():
