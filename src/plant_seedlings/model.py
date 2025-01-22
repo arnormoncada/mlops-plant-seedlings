@@ -35,7 +35,7 @@ class timm_model(nn.Module):
         self.model.load_state_dict(state_dict, strict)
 
 
-class MywesomeModel(nn.Module):
+class MyAwesomeModel(nn.Module):
     """My awesome model."""
 
     def __init__(self, dropout_rate: float = 0.5) -> None:
