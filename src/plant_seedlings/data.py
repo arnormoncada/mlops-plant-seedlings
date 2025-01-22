@@ -2,6 +2,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import torch
 import json
+from hydra import compose, initialize
 
 
 def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
@@ -13,12 +14,19 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
 
     dataset = datasets.ImageFolder(root=raw_data_path, transform=transform)
 
-    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [0.8, 0.1, 0.1])
+    with initialize(config_path="../../configs", version_base="1.3"):
+        cfg = compose(config_name="config.yaml")
+
+    hparams = cfg.training
+    
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [hparams["train_size"], 
+                                                                                       hparams["val_size"], 
+                                                                                       hparams["test_size"]])
 
     # Create DataLoaders for the train and validation sets
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=hparams["batch_size"], shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=hparams["batch_size"], shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=hparams["batch_size"], shuffle=False)
 
     # Save the processed data to disk
     torch.save(train_loader, f"{processed_data_path}/train.pth")
