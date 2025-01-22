@@ -35,6 +35,7 @@ def model():
 
     return download_and_load_model(artifact_name)
 
+
 def download_and_load_model(artifact_name: str, logdir="models/"):
     """
     Download a model artifact from W&B, load it using Hydra config, and return the loaded model.
@@ -44,7 +45,7 @@ def download_and_load_model(artifact_name: str, logdir="models/"):
     run = wandb.init(
         project=os.getenv("WANDB_PROJECT", "Test_DeleteLater"),
         entity=os.getenv("WANDB_ENTITY_USER"),  # or hardcode your entity if you prefer
-        job_type="download_model"
+        job_type="download_model",
     )
 
     # Use artifact (type="model")
@@ -76,6 +77,7 @@ def download_and_load_model(artifact_name: str, logdir="models/"):
 
     return model
 
+
 def test_model_speed(model):
     """
     Test the inference speed of the model.
@@ -83,7 +85,7 @@ def test_model_speed(model):
     if model is None:
         pytest.skip("Skipping test because model could not be loaded due to missing WANDB_API_KEY or MODEL_ENTITY.")
         return
-    
+
     start = time.time()
     with torch.no_grad():
         for _ in range(100):
@@ -92,6 +94,7 @@ def test_model_speed(model):
     elapsed_time = end - start
     print(f"[INFO] Inference time for 100 runs: {elapsed_time:.4f}s")
     return elapsed_time
+
 
 if __name__ == "__main__":
     """

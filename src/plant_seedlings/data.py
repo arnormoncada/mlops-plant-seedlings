@@ -18,10 +18,10 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
         cfg = compose(config_name="config.yaml")
 
     hparams = cfg.training
-    
-    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [hparams["train_size"], 
-                                                                                       hparams["val_size"], 
-                                                                                       hparams["test_size"]])
+
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
+        dataset, [hparams["train_size"], hparams["val_size"], hparams["test_size"]]
+    )
 
     # Create DataLoaders for the train and validation sets
     train_loader = DataLoader(train_dataset, batch_size=hparams["batch_size"], shuffle=True)

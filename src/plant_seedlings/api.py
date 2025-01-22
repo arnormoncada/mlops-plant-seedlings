@@ -32,10 +32,10 @@ async def lifespan(app: FastAPI):
 
         print("Loading the models...")
 
-        #TODO: Fix the hydra issue 
+        # TODO: Fix the hydra issue
         # with initialize(config_path="../../configs", version_base="1.3"):
         #     cfg = compose(config_name="config.yaml")
-    
+
         global custom_model, mobile_net, resnet, custom_model_path, mobile_net_path, resnet_path, device, classes
 
         # Load the models and set weights
@@ -85,10 +85,8 @@ class ModelEnum(Enum):
 app = FastAPI(lifespan=lifespan)
 app.mount("/metrics", make_asgi_app(registry=MY_REGISTRY))
 
-def add_to_database(
-    features: np.array,
-    target: int
-) -> None:
+
+def add_to_database(features: np.array, target: int) -> None:
     """Simple function to add prediction to database."""
     with open("data_drifting/prediction_database.csv", "a") as file:
         file.write(f"{features[0]}, {features[1]}, {features[2]}, {target}\n")
@@ -118,21 +116,29 @@ async def read_models():
 
 
 @app.post(
-        "/predict",
-        response_model=dict, 
-        responses={
-            200: {"description": "Prediction successful", "content": {"application/json": {"example": {"class": "Loose Silky-bent", "model": "custom"}}}}, 
-            400: {"description": "Bad request", "content": {"application/json": {"example": {"detail": "Allowed file types are png, jpg, jpeg"}}}},
-            500: {"description": "Internal server error", "content": {"application/json": {"example": {"detail": "Internal server error"}}}}
-        }
-    )
+    "/predict",
+    response_model=dict,
+    responses={
+        200: {
+            "description": "Prediction successful",
+            "content": {"application/json": {"example": {"class": "Loose Silky-bent", "model": "custom"}}},
+        },
+        400: {
+            "description": "Bad request",
+            "content": {"application/json": {"example": {"detail": "Allowed file types are png, jpg, jpeg"}}},
+        },
+        500: {
+            "description": "Internal server error",
+            "content": {"application/json": {"example": {"detail": "Internal server error"}}},
+        },
+    },
+)
 async def predict(model: ModelEnum, background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     """Predict the class of the image."""
 
     request_counter.labels(endpoint="predict", status_code=HTTPStatus.OK).inc()
     with request_latency.labels("predict").time():
         try:
-
             # Read the image from the uploaded file
             contents = await file.read()
 
@@ -143,7 +149,6 @@ async def predict(model: ModelEnum, background_tasks: BackgroundTasks, file: Upl
             if not filename.lower().endswith(tuple(ALLOWED_EXTENSIONS)):
                 error_counter.labels(endpoint="predict", status_code=HTTPStatus.BAD_REQUEST).inc()
                 raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Allowed file types are png, jpg, jpeg")
-
 
             np_img = np.frombuffer(contents, np.uint8)
             img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
@@ -180,7 +185,7 @@ async def predict(model: ModelEnum, background_tasks: BackgroundTasks, file: Upl
 
             # prediction = classes[str(prediction.item())]
             print(f"Prediction: {classes[str(prediction.item())]}")
-            
+
             # Extract features
             img = img.numpy(force=True)
             features = extract_features(img)
