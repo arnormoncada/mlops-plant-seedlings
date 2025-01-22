@@ -1,7 +1,6 @@
 import torch
 import typer
 from data import plant_seedlings
-from metrics import compute_metrics
 import os
 import hydra
 import typer.completion
@@ -9,11 +8,11 @@ from hydra import compose, initialize
 import wandb
 from omegaconf import OmegaConf
 from datetime import datetime
+from model import timm_model  # Import the custom model class
 #from torch.utils.data import DataLoader, random_split
 from google.cloud import storage
 app = typer.Typer()
 
-# @hydra.main(config_path="config", config_name="config.yaml")
 
 def upload_to_storage(bucket_name: str, source_file_path: str, destination_blob_path: str):
   """Uploads a file to the bucket."""
@@ -38,15 +37,31 @@ def train_VAI() -> None:
     )
     print(f"Using device: {DEVICE}")
 
-    # Instantiate model and optimizer
-    model = hydra.utils.instantiate({"_target_": config.architecture, "pretrained": config.pretrained}).to(DEVICE)
-    optimizer = hydra.utils.instantiate(
-        {"_target_": f"torch.optim.{config.optimizer}", 
-         "lr": config.learning_rate, 
-         "momentum": config.momentum, 
-         "weight_decay": config.weight_decay},
-        params=model.parameters()
-    )
+    # Instantiate model using Hydra
+    # Instantiate the model using the timm_model class
+    model = timm_model(
+        model_name=config.architecture, 
+        num_classes=config.num_classes,
+    ).to(DEVICE)
+
+    # Instantiate optimizer directly
+    optimizer_cls = getattr(torch.optim, config.optimizer)  # Get optimizer class dynamically
+    # Handle optimizer-specific arguments
+    if config.optimizer == "SGD":
+        optimizer = optimizer_cls(
+            model.parameters(),
+            lr=config.learning_rate,
+            momentum=config.momentum,
+            weight_decay=config.weight_decay,
+        )
+    elif config.optimizer == "Adam":
+        optimizer = optimizer_cls(
+            model.parameters(),
+            lr=config.learning_rate,
+            weight_decay=config.weight_decay,
+        )
+    else:
+        raise ValueError(f"Unsupported optimizer: {config.optimizer}")
     loss_fn = torch.nn.CrossEntropyLoss()
 
     # Load the dataset
@@ -105,14 +120,11 @@ def train_VAI() -> None:
         print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}")
 
     print("Training complete")
-
     datetime_str = datetime.now().strftime("%Y%m%d-%H%M%S")
     model_name = f"{config.architecture}_{datetime_str}.pth"
-    model_path_and_name = os.path.join(config.model_path, model_name)
+    model_path_and_name = os.path.join("models/", model_name)
     torch.save(model.state_dict(), model_path_and_name)
     print(f"Saving model to {model_path_and_name}")
-    metrics = compute_metrics(y_pred, target)
-    print("Final metrics:", metrics)
     wandb.finish()
     # Upload model to GCP bucket
     upload_to_storage(
@@ -135,4 +147,3 @@ def sweep():
 
 if __name__ == "__main__":
     typer.run(sweep)
-    #typer.run(train_VAI)
