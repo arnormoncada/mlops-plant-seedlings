@@ -7,6 +7,7 @@ import torch
 from .model import MyAwesomeModel, timm_model
 import numpy as np
 import json
+from hydra import compose, initialize
 
 
 @asynccontextmanager
@@ -17,6 +18,9 @@ async def lifespan(app: FastAPI):
 
         print("Loading the models...")
 
+        with initialize(config_path="../../configs", version_base="1.3"):
+            cfg = compose(config_name="config.yaml")
+    
         global custom_model, mobile_net, resnet, custom_model_path, mobile_net_path, resnet_path, device, classes
 
         # Load the models and set weights
@@ -27,10 +31,10 @@ async def lifespan(app: FastAPI):
         custom_model = MyAwesomeModel()
         custom_model.load_state_dict(torch.load(custom_model_path))
 
-        mobile_net = timm_model("mobilenetv3_small_050", 12)
+        mobile_net = timm_model("mobilenetv3_small_050", cfg.num_classes)
         mobile_net.load_state_dict(torch.load(mobile_net_path))
 
-        resnet = timm_model("resnet18", 12)
+        resnet = timm_model("resnet18", cfg.num_classes)
         resnet.load_state_dict(torch.load(resnet_path))
         
             # TODO: add new model here
