@@ -17,21 +17,29 @@ async def lifespan(app: FastAPI):
 
         print("Loading the models...")
 
-        global custom_model, mobile_net, device, classes
+        global custom_model, mobile_net, resnet, custom_model_path, mobile_net_path, resnet_path, device, classes
 
         # Load the models and set weights
+        custom_model_path = "models/custom/custom_3.pth"
+        mobile_net_path = "models/mobilenetv3_small_050/mobilenetv3_small_050_30.pth"
+        resnet_path = "models/resnet18/resnet18_2.pth"
+
         custom_model = MyAwesomeModel()
-        custom_model.load_state_dict(torch.load("models/custom/custom_3.pth"))
+        custom_model.load_state_dict(torch.load(custom_model_path))
+
         mobile_net = timm_model("mobilenetv3_small_050", 12)
-        mobile_net.load_state_dict(torch.load("models/mobilenetv3_small_050/mobilenetv3_small_050_30.pth"))
+        mobile_net.load_state_dict(torch.load(mobile_net_path))
+
         resnet = timm_model("resnet18", 12)
-        resnet.load_state_dict(torch.load("models/resnet18/resnet18_2.pth"))
-        # TODO: add new model here
+        resnet.load_state_dict(torch.load(resnet_path))
+        
+            # TODO: add new model here
 
         # Set the device
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         custom_model.to(device)
         mobile_net.to(device)
+        resnet.to(device)
 
         print("Models loaded successfully!")
 
@@ -43,7 +51,7 @@ async def lifespan(app: FastAPI):
 
         yield
         print("Cleaning up...")
-        del custom_model, mobile_net, device, classes
+        del custom_model, mobile_net, resnet, custom_model_path, mobile_net_path, resnet_path, device, classes
         print("Shutting down the app...Goodbye!")
     finally:
         pass
@@ -94,7 +102,17 @@ async def predict(model: ModelEnum, file: UploadFile = File(...)):
     img = img.to(device)
 
     # Select the appropriate model
-    selected_model = custom_model if model == ModelEnum.custom else mobile_net
+    if model == ModelEnum.custom:
+        selected_model = custom_model
+        selected_model_path = custom_model_path
+    elif model == ModelEnum.mobilenet:
+        selected_model = mobile_net
+        selected_model_path = mobile_net_path
+    elif model == ModelEnum.resnet:
+        selected_model = resnet
+        selected_model_path = resnet_path
+    else:
+        return {"error": "Invalid model"}
 
     # Make the prediction
     with torch.no_grad():
@@ -103,7 +121,6 @@ async def predict(model: ModelEnum, file: UploadFile = File(...)):
         _, prediction = torch.max(output, 1)
 
     print(f"Prediction: {classes[str(prediction.item())]}")
-    print(f"Selected model: {selected_model}")
 
     # Return the prediction
-    return {"class": classes[str(prediction.item())]}
+    return {"class": classes[str(prediction.item())], "model": selected_model_path}
