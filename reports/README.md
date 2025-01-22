@@ -258,7 +258,7 @@ We made use of both branches and PRs in our project. No one had their own branch
 >
 > Answer:
 
---- question 10 fill here ---
+We did make use of the DVC in our project. We used it with the aim to version control our data, however the raw dataset was never changed, so we never had to revert to an earlier version of the dataset or create new versions of it. The dataset essentially only has two major versions: the dataset only containing the original raw data, and the dataset containing the raw data and the preprocessed data. This did however help us in the sense that we could easily share the dataset between group members, and we could easily download the dataset from the cloud to our local machine.
 
 ### Question 11
 
