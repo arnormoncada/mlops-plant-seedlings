@@ -117,7 +117,15 @@ async def read_models():
         return {"models": list(ModelEnum)}
 
 
-@app.post("/predict")
+@app.post(
+        "/predict",
+        response_model=dict, 
+        responses={
+            200: {"description": "Prediction successful", "content": {"application/json": {"example": {"class": "Loose Silky-bent", "model": "custom"}}}}, 
+            400: {"description": "Bad request", "content": {"application/json": {"example": {"detail": "Allowed file types are png, jpg, jpeg"}}}},
+            500: {"description": "Internal server error", "content": {"application/json": {"example": {"detail": "Internal server error"}}}}
+        }
+    )
 async def predict(model: ModelEnum, background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     """Predict the class of the image."""
 
@@ -186,7 +194,7 @@ async def predict(model: ModelEnum, background_tasks: BackgroundTasks, file: Upl
         except Exception as e:
             error_counter.labels(endpoint="predict", status_code=HTTPStatus.INTERNAL_SERVER_ERROR).inc()
             print(f"Error in prediction: {e}")
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)) from e
+            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail="Internal server error")
 
 
 # uvicorn --reload --port 8000 src.plant_seedlings.api:app
