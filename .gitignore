@@ -191,6 +191,3 @@ cython_debug/
 
 # Ignore output files
 /outputs
-
-# Ignore model files
-/models
