@@ -49,7 +49,7 @@ def evaluate(model_checkpoint: str, model: str = "resnet") -> None:
     
     model.load_state_dict(torch.load(model_checkpoint))
 
-    _, test_loader = plant_seedlings(data_path="data/processed")
+    _, _, test_loader = plant_seedlings(data_path="data/processed")
 
     # Set the model to evaluation mode
     model.eval()
