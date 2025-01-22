@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from http import HTTPStatus
 from enum import Enum
 import cv2
@@ -10,6 +10,8 @@ import json
 from torchvision.transforms import Compose, Resize, ToTensor
 from PIL import Image
 # from hydra import compose, initialize
+
+from .utils import extract_features
 
 
 @asynccontextmanager
@@ -72,6 +74,14 @@ class ModelEnum(Enum):
 
 app = FastAPI(lifespan=lifespan)
 
+def add_to_database(
+    features: np.array,
+    target: int
+) -> None:
+    """Simple function to add prediction to database."""
+    with open("data_drifting/prediction_database.csv", "a") as file:
+        file.write(f"{features[0]}, {features[1]}, {features[2]}, {target}\n")
+
 
 @app.get("/")
 async def root():
@@ -90,7 +100,7 @@ async def read_models():
 
 
 @app.post("/predict")
-async def predict(model: ModelEnum, file: UploadFile = File(...)):
+async def predict(model: ModelEnum, background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     """Predict the class of the image."""
     # Read the image from the uploaded file
     contents = await file.read()
@@ -102,7 +112,7 @@ async def predict(model: ModelEnum, file: UploadFile = File(...)):
 
     pil_img = Image.fromarray(img)
 
-   # Preprocess the image
+    # Preprocess the image
     transform = Compose([Resize((224, 224)), ToTensor()])
 
     img = transform(pil_img).unsqueeze(0).to(device)
@@ -126,7 +136,17 @@ async def predict(model: ModelEnum, file: UploadFile = File(...)):
         output = selected_model(img)
         _, prediction = torch.max(output, 1)
 
+    # prediction = classes[str(prediction.item())]
     print(f"Prediction: {classes[str(prediction.item())]}")
+    
+    # Extract features
+    img = img.numpy(force=True)
+    features = extract_features(img)
+    # print(features)
+    background_tasks.add_task(add_to_database, features[0], int(prediction))
 
     # Return the prediction
     return {"class": classes[str(prediction.item())], "model": selected_model_path}
+
+
+# uvicorn --reload --port 8000 src.plant_seedlings.api:app
