@@ -577,4 +577,10 @@ We made use of config files. Whenever an experiment is run, multiple print state
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+Student s241645 (Arnór) was in charge of
+Student s242766 (Dagur) was in charge of
+Student s232735 (Jason) was in charge of
+Student s204225 (Viktor) was in charge of
+Student s204218 (Jonas) was in charge of
+
+GitHub Copilot was used for auto completing simple/trivial lines of code.
