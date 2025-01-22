@@ -68,7 +68,6 @@ def train() -> None:
     run.name = f"{model_name}_{run_version}"
     print("wandb new run name: ", run.name)
 
-    
     train_dataloader, val_dataloader, _ = plant_seedlings(data_path="data/processed")
 
     print("Number of training images: ", len(train_dataloader.dataset))

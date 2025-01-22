@@ -12,6 +12,7 @@ class ModelEnum(Enum):
     resnet = "resnet18"
     mobilenet = "mobilenetv3_small_050"
 
+
 def get_latest_checkpoint(architecture: str = "resnet18") -> str:
     """Retrieve the latest checkpoint based on the model architecture."""
 
@@ -46,14 +47,14 @@ def evaluate(model_checkpoint: str, model: str = "resnet") -> None:
         model = timm_model("mobilenetv3_small_050", 12).to(DEVICE)
     else:
         model = MyAwesomeModel().to(DEVICE)
-    
+
     model.load_state_dict(torch.load(model_checkpoint))
 
     _, _, test_loader = plant_seedlings(data_path="data/processed")
 
     # Set the model to evaluation mode
     model.eval()
-    
+
     correct, total = 0, 0
     with torch.no_grad():
         for images, labels in test_loader:
@@ -62,7 +63,7 @@ def evaluate(model_checkpoint: str, model: str = "resnet") -> None:
             _, predicted = torch.max(outputs, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
-    
+
     print(f"Total number of test images: {total}")
     print(f"Number of correctly classified images: {correct}")
     print(f"Accuracy of the model on the test set: {100 * correct / total:.2f}%")
