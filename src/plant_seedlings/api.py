@@ -103,6 +103,7 @@ async def predict(model: ModelEnum, file: UploadFile = File(...)):
         _, prediction = torch.max(output, 1)
 
     print(f"Prediction: {classes[str(prediction.item())]}")
+    print(f"Selected model: {selected_model}")
 
     # Return the prediction
     return {"class": classes[str(prediction.item())]}
