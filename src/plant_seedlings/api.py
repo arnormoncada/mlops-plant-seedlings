@@ -9,7 +9,7 @@ import numpy as np
 import json
 from torchvision.transforms import Compose, Resize, ToTensor
 from PIL import Image
-from hydra import compose, initialize
+# from hydra import compose, initialize
 
 
 @asynccontextmanager
@@ -20,8 +20,9 @@ async def lifespan(app: FastAPI):
 
         print("Loading the models...")
 
-        with initialize(config_path="../../configs", version_base="1.3"):
-            cfg = compose(config_name="config.yaml")
+        #TODO: Fix the hydra issue 
+        # with initialize(config_path="../../configs", version_base="1.3"):
+        #     cfg = compose(config_name="config.yaml")
     
         global custom_model, mobile_net, resnet, custom_model_path, mobile_net_path, resnet_path, device, classes
 
@@ -33,12 +34,11 @@ async def lifespan(app: FastAPI):
         custom_model = MyAwesomeModel()
         custom_model.load_state_dict(torch.load(custom_model_path))
 
-        mobile_net = timm_model("mobilenetv3_small_050", cfg.num_classes)
+        mobile_net = timm_model("mobilenetv3_small_050", 12)
         mobile_net.load_state_dict(torch.load(mobile_net_path))
 
-        resnet = timm_model("resnet18", cfg.num_classes)
+        resnet = timm_model("resnet18", 12)
         resnet.load_state_dict(torch.load(resnet_path))
-        
 
         # Set the device
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
