@@ -6,6 +6,7 @@ import os
 import hydra
 import typer.completion
 from hydra import compose, initialize
+import wandb
 from omegaconf import OmegaConf
 from datetime import datetime
 #from torch.utils.data import DataLoader, random_split
@@ -29,39 +30,35 @@ def upload_to_storage(bucket_name: str, source_file_path: str, destination_blob_
 def train_VAI() -> None:
     """Train a model on plant-seedlings.
         Then upload the model to GCP bucket."""
-
+    wandb.init()
+    config = wandb.config
     print("Training...")
     DEVICE = torch.device(
         "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     )
     print(f"Using device: {DEVICE}")
 
-    with initialize(config_path="../../configs", version_base="1.3"):
-        cfg = compose(config_name="config.yaml")
-
-    print(OmegaConf.to_yaml(cfg))
-
-    hparams = cfg.training
-    model = hydra.utils.instantiate(cfg.models).to(DEVICE)
-    optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
-    torch.manual_seed(hparams['seed'])
-    print("lr = {}, batch_size = {}, epochs = {}, seed = {}".format(cfg.optimizer["lr"], hparams["batch_size"], hparams["epochs"], hparams["seed"]))
-
-    # first we save the model to a file and then log it to wandb as an artifact
-    model_name = OmegaConf.select(cfg, "models.model_name")
-    if model_name is None:
-        model_name = "custom"
+    # Instantiate model and optimizer
+    model = hydra.utils.instantiate({"_target_": config.architecture, "pretrained": config.pretrained}).to(DEVICE)
+    optimizer = hydra.utils.instantiate(
+        {"_target_": f"torch.optim.{config.optimizer}", 
+         "lr": config.learning_rate, 
+         "momentum": config.momentum, 
+         "weight_decay": config.weight_decay},
+        params=model.parameters()
+    )
+    loss_fn = torch.nn.CrossEntropyLoss()
 
     # Load the dataset
     train_dataloader, val_dataloader = plant_seedlings(data_path="data/processed")
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    statistics = {"train_loss": [], "train_accuracy": []}
-    for epoch in range(hparams["epochs"]):
+    for epoch in range(config.epochs):
         model.train()
+        train_loss, train_accuracy = 0.0, 0.0
+        total_train_samples = 0
 
-        preds, targets = [], []
         for i, (img, target) in enumerate(train_dataloader):
             img, target = img.to(DEVICE), target.to(DEVICE)
             optimizer.zero_grad()
@@ -69,38 +66,54 @@ def train_VAI() -> None:
             loss = loss_fn(y_pred, target)
             loss.backward()
             optimizer.step()
-            statistics["train_loss"].append(loss.item())
 
-            accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
-            statistics["train_accuracy"].append(accuracy)
+            train_loss += loss.item() * img.size(0)
+            train_accuracy += (y_pred.argmax(dim=1) == target).sum().item()
+            total_train_samples += img.size(0)
 
-            preds.append(y_pred.detach().cpu())
-            targets.append(target.detach().cpu())
+        # Calculate average training loss and accuracy
+        train_loss /= total_train_samples
+        train_accuracy /= total_train_samples
 
-            if i % (len(train_dataloader) // 5) == 0:
-                print(f"Epoch {epoch+1}, Iteration {i}, Loss: {loss.item()}, Accuracy: {accuracy}")
+        # Validation loop
+        model.eval()
+        val_loss, val_accuracy = 0.0, 0.0
+        total_val_samples = 0
 
-        else:
-            # Validation loop
-            model.eval()
-            with torch.no_grad():
-                for j, (img, target) in enumerate(val_dataloader):
-                    img, target = img.to(DEVICE), target.to(DEVICE)
-                    y_pred = model(img)
+        with torch.no_grad():
+            for img, target in val_dataloader:
+                img, target = img.to(DEVICE), target.to(DEVICE)
+                y_pred = model(img)
+                loss = loss_fn(y_pred, target)
 
-                    #test_loss = loss_fn(y_pred, target)
-                    accuracy = (y_pred.argmax(dim=1) == target).float().mean().item()
-        preds = torch.cat(preds, 0)
-        targets = torch.cat(targets, 0)
+                val_loss += loss.item() * img.size(0)
+                val_accuracy += (y_pred.argmax(dim=1) == target).sum().item()
+                total_val_samples += img.size(0)
+
+        val_loss /= total_val_samples
+        val_accuracy /= total_val_samples
+
+        # Log epoch metrics
+        wandb.log({
+            "epoch": epoch + 1,
+            "train_loss": train_loss,
+            "train_accuracy": train_accuracy,
+            "val_loss": val_loss,
+            "val_accuracy": val_accuracy
+        })
+
+        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}")
+
     print("Training complete")
 
     datetime_str = datetime.now().strftime("%Y%m%d-%H%M%S")
-    model_path_and_name = hparams["model_path"] + model_name + f"/{datetime_str}" + ".pth"
+    model_name = f"{config.architecture}_{datetime_str}.pth"
+    model_path_and_name = os.path.join(config.model_path, model_name)
     torch.save(model.state_dict(), model_path_and_name)
     print(f"Saving model to {model_path_and_name}")
-    metrics = compute_metrics(targets, preds)
+    metrics = compute_metrics(y_pred, target)
     print("Final metrics:", metrics)
-
+    wandb.finish()
     # Upload model to GCP bucket
     upload_to_storage(
         bucket_name=os.environ.get("BUCKET_NAME", "plant-seedling-models"),
@@ -108,5 +121,18 @@ def train_VAI() -> None:
         destination_blob_path=model_path_and_name
     )
 
+@app.command()
+def sweep():
+    """Run a W&B sweep using the sweep configuration."""
+    # Load the sweep configuration from sweep1.yaml
+    sweep_config_path = "configs/sweeps/sweep1.yaml"
+    with open(sweep_config_path, "r") as file:
+        sweep_config = OmegaConf.load(file)
+    # Convert DictConfig to a standard Python dictionary
+    sweep_config_dict = OmegaConf.to_container(sweep_config, resolve=True)
+    sweep_id = wandb.sweep(sweep_config_dict, project=sweep_config_dict["project"], entity=sweep_config_dict["entity"])
+    wandb.agent(sweep_id, function=train_VAI,count=100)
+
 if __name__ == "__main__":
-    typer.run(train_VAI)
+    typer.run(sweep)
+    #typer.run(train_VAI)
