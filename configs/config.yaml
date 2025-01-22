@@ -2,7 +2,7 @@ defaults:
   - _self_
   - optimizer: adam
   - training: training_conf
-  - models: resnet18  # MyAwesomeModel, resnet18, mobilenetv3
+  - models: mobilenetv3  # MyAwesomeModel, resnet18, mobilenetv3
 
 # For logging
 logging:
