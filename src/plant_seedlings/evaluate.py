@@ -69,7 +69,7 @@ def evaluate(model_checkpoint: str, model: str = "resnet") -> None:
 
 
 if __name__ == "__main__":
-    evaluate(model_checkpoint=None, model="resnet18")
-    # evaluate(model_checkpoint=None, model="mobilenetv3_small_050")
+    # evaluate(model_checkpoint=None, model="resnet18")
+    evaluate(model_checkpoint=None, model="mobilenetv3_small_050")
     # evaluate(model_checkpoint=None, model="custom")
 
