@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn import datasets
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset, DataQualityPreset, TargetDriftPreset
 from evidently.test_suite import TestSuite
