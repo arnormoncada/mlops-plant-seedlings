@@ -2,17 +2,15 @@ import torch
 import typer
 from data import create_dataloaders, Sweep_preprocess
 import os
-import hydra
 import typer.completion
-from hydra import compose, initialize
 import wandb
 import time
 from omegaconf import OmegaConf
-from datetime import datetime
 from model import timm_model  # Import the custom model class
-#from torch.utils.data import DataLoader, random_split
 from google.cloud import storage
+
 app = typer.Typer()
+
 
 def evaluate_model(model, test_dataloader, loss_fn, device, wandb) -> None:
     """
@@ -56,30 +54,35 @@ def evaluate_model(model, test_dataloader, loss_fn, device, wandb) -> None:
     avg_inference_time = sum(inference_times) / len(inference_times)
 
     # Log metrics to W&B
-    wandb.log({
-        "test_loss": test_loss,
-        "test_accuracy": test_accuracy,
-        "avg_inference_time": avg_inference_time,
-    })
+    wandb.log(
+        {
+            "test_loss": test_loss,
+            "test_accuracy": test_accuracy,
+            "avg_inference_time": avg_inference_time,
+        }
+    )
 
-    print(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.4f}, Avg Inference Time: {avg_inference_time:.6f} seconds")
+    print(
+        f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.4f}, Avg Inference Time: {avg_inference_time:.6f} seconds"
+    )
 
 
 def upload_to_storage(bucket_name: str, source_file_path: str, destination_blob_path: str):
-  """Uploads a file to the bucket."""
-  storage_client = storage.Client()
-  storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024* 1024  # 5 MB This is for my slow internet connection
-  storage.blob._MAX_MULTIPART_SIZE = 5 * 1024* 1024  # 5 MB This is for my slow internet connection
-  bucket = storage_client.bucket(bucket_name)
-  blob = bucket.blob(destination_blob_path)
-  blob.upload_from_filename(source_file_path)
-  print(f'The file {source_file_path} is uploaded to GCP bucket path: {destination_blob_path}')
-  return None
+    """Uploads a file to the bucket."""
+    storage_client = storage.Client()
+    storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB This is for my slow internet connection
+    storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB This is for my slow internet connection
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_path)
+    blob.upload_from_filename(source_file_path)
+    print(f"The file {source_file_path} is uploaded to GCP bucket path: {destination_blob_path}")
+    return None
+
 
 @app.command()
 def train_VAI() -> None:
     """Train a model on plant-seedlings.
-        Then upload the model to GCP bucket."""
+    Then upload the model to GCP bucket."""
     wandb.init()
     config = wandb.config
     print("Training...")
@@ -103,10 +106,10 @@ def train_VAI() -> None:
     batch_size = config.batch_size  # Get batch size from W&B config
     train_dataloader, val_dataloader, test_dataloader = create_dataloaders(
         train_dataset, val_dataset, test_dataset, batch_size
-    )  
+    )
     # Instantiate the model using the timm_model class
     model = timm_model(
-        model_name=config.architecture, 
+        model_name=config.architecture,
         num_classes=config.num_classes,
     ).to(DEVICE)
 
@@ -169,17 +172,21 @@ def train_VAI() -> None:
         val_accuracy /= total_val_samples
 
         # Log epoch metrics
-        wandb.log({
-            "epoch": epoch + 1,
-            "train_loss": train_loss,
-            "train_accuracy": train_accuracy,
-            "val_loss": val_loss,
-            "val_accuracy": val_accuracy
-        })
+        wandb.log(
+            {
+                "epoch": epoch + 1,
+                "train_loss": train_loss,
+                "train_accuracy": train_accuracy,
+                "val_loss": val_loss,
+                "val_accuracy": val_accuracy,
+            }
+        )
 
-        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}")
+        print(
+            f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}"
+        )
 
-    print("Training complete"),
+    (print("Training complete"),)
     # Evaluate the model on the test dataset
     evaluate_model(model, test_dataloader, loss_fn, DEVICE, wandb)
 
@@ -192,8 +199,9 @@ def train_VAI() -> None:
     upload_to_storage(
         bucket_name=os.environ.get("BUCKET_NAME", "plant-seedling-models"),
         source_file_path=model_path_and_name,
-        destination_blob_path=model_path_and_name
+        destination_blob_path=model_path_and_name,
     )
+
 
 @app.command()
 def sweep():
@@ -205,7 +213,8 @@ def sweep():
     # Convert DictConfig to a standard Python dictionary
     sweep_config_dict = OmegaConf.to_container(sweep_config, resolve=True)
     sweep_id = wandb.sweep(sweep_config_dict, project=sweep_config_dict["project"], entity=sweep_config_dict["entity"])
-    wandb.agent(sweep_id, function=train_VAI,count=50)
+    wandb.agent(sweep_id, function=train_VAI, count=50)
+
 
 if __name__ == "__main__":
     typer.run(sweep)

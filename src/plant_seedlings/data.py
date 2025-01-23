@@ -41,6 +41,7 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
 
     print("Data preprocessing complete.")
 
+
 def Sweep_preprocess(raw_data_path: str, train_size: float, val_size: float, test_size: float) -> tuple:
     """
     Preprocess the plant seed dataset and split into train, validation, and test sets.
@@ -67,9 +68,7 @@ def Sweep_preprocess(raw_data_path: str, train_size: float, val_size: float, tes
     test_len = total_size - train_len - val_len
 
     # Split the dataset
-    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
-        dataset, [train_len, val_len, test_len]
-    )
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_len, val_len, test_len])
 
     # Create a class-to-index mapping and save it to JSON
     class_to_idx = dataset.class_to_idx
@@ -80,12 +79,14 @@ def Sweep_preprocess(raw_data_path: str, train_size: float, val_size: float, tes
     print("Data preprocessing complete.")
     return train_dataset, val_dataset, test_dataset
 
+
 def plant_seedlings(data_path: str) -> tuple[torch.utils.data.Dataset, torch.utils.data.Dataset]:
     "Return the plant seed dataset train.pth and val.pth"
     train_loader = torch.load(f"{data_path}/train.pth")
     val_loader = torch.load(f"{data_path}/val.pth")
     test_loader = torch.load(f"{data_path}/test.pth")
     return train_loader, val_loader, test_loader
+
 
 def create_dataloaders(
     train_dataset, val_dataset, test_dataset, batch_size: int
@@ -105,6 +106,7 @@ def create_dataloaders(
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     return train_loader, val_loader, test_loader
+
 
 if __name__ == "__main__":
     raw_data_path = "data/raw"
