@@ -425,7 +425,9 @@ The chosen metrics loss, accuracy and interference time are important in our cas
 
 Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see in the wandb webpage.
 
+
 ![title](./figures/Sweep.png)
+
 
 
 
@@ -541,7 +543,7 @@ We used a VM instance with an Nvidia T4 GPU with a machine type n1-standard to r
 >
 > Answer: 
 Here below is the GCP bucket of all our trained models
-(image of GCP bucket of models)
+![bucket_model](./figures/GCP_models.jpg)
 
 
 Here below is the GCP bucket of all our stored cloud builds.
@@ -592,6 +594,7 @@ Here below is the GCP bucket of all our stored cloud builds.
 >
 > Answer:
 
+  
 Our first venture was to use VertexAI to do model training and hyperparameter sweeps, logging and saving models in the artifact registry, an ambitious task and it was too ambitious. We ran into problems integrating our code into a format vertexAI can work with and the course timeline was too tight to solve the issue we decided to pivot and use a VM instance to do model training. But once again we landed in internet difficulties copying the data over to the VM instance after 4 hours the data was still downloading into the VM instance. Thankfully one team member had a nvidia card that was cuda capable gtx 3060 and we did the sweep with that.
 
 
@@ -751,7 +754,7 @@ Not all group members were using the cloud, as we didn't do much training on the
 
 For one of the members the cost was around 2$. The three billed services were all pretty close to each other (cloud run, articat registry and cloud storage). However the most expensive service was the cloud storage, coming around 1$, which was most likely a result of the stored cloud builds in the bucket. 
 
-TODO: JASON ADD YOURS HERE
+The other team member used 0.46 cents in cloud compute for a VM instance to train models but since that did not work out as planned we trained on a local machine and 0.06 cents was spent for a bucket for model storage.
 
 In reality we didn't end up using many rescources regardless in the cloud.
 
