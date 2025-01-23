@@ -1,17 +1,68 @@
 import torch
 import typer
-from data import plant_seedlings
+from data import create_dataloaders, Sweep_preprocess
 import os
 import hydra
 import typer.completion
 from hydra import compose, initialize
 import wandb
+import time
 from omegaconf import OmegaConf
 from datetime import datetime
 from model import timm_model  # Import the custom model class
 #from torch.utils.data import DataLoader, random_split
 from google.cloud import storage
 app = typer.Typer()
+
+def evaluate_model(model, test_dataloader, loss_fn, device, wandb) -> None:
+    """
+    Evaluate the trained model on the test dataset and log metrics to W&B.
+
+    Args:
+        model: The trained model.
+        test_dataloader: DataLoader for the test dataset.
+        loss_fn: Loss function used for evaluation.
+        device: Device to perform evaluation on (CPU/GPU).
+        wandb: W&B instance for logging metrics.
+
+    Returns:
+        None
+    """
+    print("Evaluating model on test dataset...")
+
+    model.eval()
+    test_loss, test_accuracy = 0.0, 0.0
+    total_test_samples = 0
+    inference_times = []
+
+    with torch.no_grad():
+        for img, target in test_dataloader:
+            img, target = img.to(device), target.to(device)
+
+            # Measure inference time
+            start_time = time.time()
+            y_pred = model(img)
+            inference_times.append(time.time() - start_time)
+
+            # Calculate loss and accuracy
+            loss = loss_fn(y_pred, target)
+            test_loss += loss.item() * img.size(0)
+            test_accuracy += (y_pred.argmax(dim=1) == target).sum().item()
+            total_test_samples += img.size(0)
+
+    # Calculate average metrics
+    test_loss /= total_test_samples
+    test_accuracy /= total_test_samples
+    avg_inference_time = sum(inference_times) / len(inference_times)
+
+    # Log metrics to W&B
+    wandb.log({
+        "test_loss": test_loss,
+        "test_accuracy": test_accuracy,
+        "avg_inference_time": avg_inference_time,
+    })
+
+    print(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.4f}, Avg Inference Time: {avg_inference_time:.6f} seconds")
 
 
 def upload_to_storage(bucket_name: str, source_file_path: str, destination_blob_path: str):
@@ -37,7 +88,22 @@ def train_VAI() -> None:
     )
     print(f"Using device: {DEVICE}")
 
-    # Instantiate model using Hydra
+    raw_data_path = "data/raw"  # Path to raw dataset
+
+    train_size, val_size, test_size = 0.7, 0.2, 0.1  # Dataset split proportions
+
+    train_dataset, val_dataset, test_dataset = Sweep_preprocess(
+        raw_data_path=raw_data_path,
+        train_size=train_size,
+        val_size=val_size,
+        test_size=test_size,
+    )
+
+    # Create DataLoaders
+    batch_size = config.batch_size  # Get batch size from W&B config
+    train_dataloader, val_dataloader, test_dataloader = create_dataloaders(
+        train_dataset, val_dataset, test_dataset, batch_size
+    )  
     # Instantiate the model using the timm_model class
     model = timm_model(
         model_name=config.architecture, 
@@ -63,12 +129,6 @@ def train_VAI() -> None:
     else:
         raise ValueError(f"Unsupported optimizer: {config.optimizer}")
     loss_fn = torch.nn.CrossEntropyLoss()
-
-    # Load the dataset
-    train_dataloader, val_dataloader = plant_seedlings(data_path="data/processed")
-
-    loss_fn = torch.nn.CrossEntropyLoss()
-
     for epoch in range(config.epochs):
         model.train()
         train_loss, train_accuracy = 0.0, 0.0
@@ -119,9 +179,11 @@ def train_VAI() -> None:
 
         print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}")
 
-    print("Training complete")
-    datetime_str = datetime.now().strftime("%Y%m%d-%H%M%S")
-    model_name = f"{config.architecture}_{datetime_str}.pth"
+    print("Training complete"),
+    # Evaluate the model on the test dataset
+    evaluate_model(model, test_dataloader, loss_fn, DEVICE, wandb)
+
+    model_name = f"{wandb.run.name}.pth"
     model_path_and_name = os.path.join("models/", model_name)
     torch.save(model.state_dict(), model_path_and_name)
     print(f"Saving model to {model_path_and_name}")
@@ -143,7 +205,7 @@ def sweep():
     # Convert DictConfig to a standard Python dictionary
     sweep_config_dict = OmegaConf.to_container(sweep_config, resolve=True)
     sweep_id = wandb.sweep(sweep_config_dict, project=sweep_config_dict["project"], entity=sweep_config_dict["entity"])
-    wandb.agent(sweep_id, function=train_VAI,count=100)
+    wandb.agent(sweep_id, function=train_VAI,count=50)
 
 if __name__ == "__main__":
     typer.run(sweep)
