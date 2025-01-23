@@ -197,3 +197,6 @@ cython_debug/
 
 # Ignore GCP credentials
 dtumlops-447815-e1c2177b8aef.json
+
+# Ignore html files
+*.html
