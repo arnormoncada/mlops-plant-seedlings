@@ -327,6 +327,7 @@ We made use of both branches and PRs in our project. No one had their own branch
 
 We did make use of the DVC in our project. We used it with the aim to version control our data, however the raw dataset was never changed, so we never had to revert to an earlier version of the dataset or create new versions of it. The dataset essentially only has two major versions: the dataset only containing the original raw data, and the dataset containing the raw data and the preprocessed data. This did however help us in the sense that we could easily share the dataset between group members, and we could easily download the dataset from the cloud to our local machine.
 
+It's good to note that we have the dvc dataset stored in google drive rather than gcp bucket, as we already set it up that way in week one, and we did not see the need to change our remote storage at this point unless we had time to spare e.g. maybe we finished the project early or something of the sort.
 
 ### Question 11
 
@@ -538,7 +539,8 @@ Here below is the GCP bucket of all our trained models
 (image of GCP bucket of models)
 
 
-(Image of API GCP bucket)
+Here below is the GCP bucket of all our stored cloud builds.
+![bucket_adm](./figures/adm_bucket.png)
 
 
 
@@ -551,8 +553,9 @@ Here below is the GCP bucket of all our trained models
 >
 > Answer:
 
+![artifact-registry_01](./figures/artifact_01.png)
 
-Arnór will provide picture
+![artifact-registry_02](./figures/artifact_02.png)
 
 
 
@@ -566,7 +569,8 @@ Arnór will provide picture
 > Answer:
 
 
-Arnór will provide pocture
+![cloud-build_01](./figures/cloudbuild_01.png)
+![cloud-build_02](./figures/cloudbuild_02.png)
 
 
 ### Question 22
@@ -668,7 +672,9 @@ https://plant-seedlings-api-1034288317994.europe-west1.run.app/
 Yes, we wrote integration tests and performance tests for the api. 
 
 
-The performance tests were creating using locust. Each endpoint was load tested with specific weights. With the predict endpoint having the highest weight and three separate tests for each available model, since this is the most important endpoint. The performance tests were also added to github actions as a separate workflow which triggers on merges to main and stores the results as an artifact., It does the performance test on the api deployed to google cloud. An example result can be seen here (ARNÓR PROVIDE HTML TABLE FILE)
+The performance tests were creating using locust. Each endpoint was load tested with specific weights. With the predict endpoint having the highest weight and three separate tests for each available model, since this is the most important endpoint. The performance tests were also added to github actions as a separate workflow which triggers on merges to main and stores the results as an artifact., It does the performance test on the api deployed to google cloud. An example result from one of the github workflows can be seen here:
+
+![locust-artifact](./figures/locust_artifact.png)
 
 
 Basic Integration tests were added to test the endpoints. The aim was to make test what could be considered deterministic for the api, i.e. the status codes and response schemas. This was also a part of github actions.
@@ -734,7 +740,13 @@ We did however create some system alerts for if the API is not behaving as expec
 > Answer:
 
 
-Not all group members were using the cloud, as we didn't do much training on the cloud. In reality we didn't end up using many rescources regardless in the cloud. We have ended up using around 2$, so really not that much.
+Not all group members were using the cloud, as we didn't do much training on the cloud. There were pretty much two members in charge of cloud related tasks.
+
+For one of the members the cost was around 2$. The three billed services were all pretty close to each other (cloud run, articat registry and cloud storage). However the most expensive service was the cloud storage, coming around 1$, which was most likely a result of the stored cloud builds in the bucket. 
+
+TODO: JASON ADD YOURS HERE
+
+In reality we didn't end up using many rescources regardless in the cloud.
 
 
 ### Question 28
@@ -796,7 +808,7 @@ Then from github, a lot of continous integration stuff happens. We have github a
 One of the problems we had to deal with was GCP and getting it to work with our python scripts. One helpful tool was the tutorial side page in GCP and using google's gemini to ask questions. But one problem constantly encountered was failing to upload a model to the GCP bucket and this was due to the poor internet connection of one team member to solve this code was added to break the upload process into 5 MB chunks. 
 
 
-
+One big challenge from week 1 was setting up the remote repository for dvc in google drive (as we did not learn about buckets yet). Mainly the part about oauth consent screen and creating an app client and assigning everyone to it as a test user. This was a bit of a hassle as we were all still unfamiliar with the GCP interface and how to navigate it. There was no special secret to overcoming it, just a lot of trial and error and reading the documentation. But in the end it was a good learning experience and we got it to work.
 
 
 
@@ -818,13 +830,20 @@ One of the problems we had to deal with was GCP and getting it to work with our 
 > Answer:
 
 
-We shared the workload of the different parallel operations tasks but if we were to appoint members to
+We shared the workload of the different parallel operations tasks and everyone helped each other out as needed, but if we were to appoint members to
 these tasks it would be more or less something like the following:
+
 Student s241645 (Arnór) was in charge of GCP runs, builds and monitoring. API development, testing, Github actions and data version control.
+
 Student s242766 (Dagur) was in charge of 
+
 Student s232735 (Jason) was in charge of sweep configs, model GCP bucket and cloud training.
+
 Student s204225 (Viktor) was in charge of training scripts, W&B log overview
+
 Student s204218 (Jonas) was in charge of training scripts, data drifting evaluation, config configuration
+
+
 
 
 GitHub Copilot was used for auto completing simple/trivial lines of code.

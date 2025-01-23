@@ -152,7 +152,7 @@ and accept all authentication steps. Someone outside of the project would have t
 <em>experiments.</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>From the cookiecutter template we have filled out the .github, configs, data, dockerfiles, (docs), models, reports, src, tests folder. We have removed the notebooks (and docs) folder, since we didn't use any noteboooks. We have added a .dvc folder, so we can utilize the functionalities from dvc. We had credentials like a .env for the Wandb api key in the root of the project folder but these were added to .gitignore for security reasons. But we have mostly stayed with the cookiecutter template in order to not break any of the file path dependencies.</p>
+<p>From the cookiecutter template we have filled out the .github, configs, data, dockerfiles, (docs), models, reports, src, tests folder. We have removed the notebooks (and docs) folder, since we didn't use any noteboooks. We have added a .dvc folder, so we can utilize the functionalities from dvc. We had credentials like a .env for the Wandb api key in the root of the project folder but these were added to .gitignore for security reasons. But we have mostly stayed with the cookiecutter template in order to not break any of the file path dependencies. But as a tool to add structure to a project, cookiecutter is definitely a nice-to-have.</p>
 <h3>Question 6</h3>
 <blockquote>
 <p><strong>Did you implement any rules for code quality and format? What about typing and documentation? Additionally,</strong>
@@ -214,6 +214,7 @@ corporate and increase the quality of your code.</p>
 <p>Answer:</p>
 </blockquote>
 <p>We did make use of the DVC in our project. We used it with the aim to version control our data, however the raw dataset was never changed, so we never had to revert to an earlier version of the dataset or create new versions of it. The dataset essentially only has two major versions: the dataset only containing the original raw data, and the dataset containing the raw data and the preprocessed data. This did however help us in the sense that we could easily share the dataset between group members, and we could easily download the dataset from the cloud to our local machine.</p>
+<p>It's good to note that we have the dvc dataset stored in google drive rather than gcp bucket, as we already set it up that way in week one, and we did not see the need to change our remote storage at this point unless we had time to spare e.g. maybe we finished the project early or something of the sort.</p>
 <h3>Question 11</h3>
 <blockquote>
 <p><strong>Discuss you continuous integration setup. What kind of continuous integration are you running (unittesting,</strong>
@@ -226,7 +227,8 @@ corporate and increase the quality of your code.</p>
 <em>here: <weblink></em></p>
 <p>Answer:</p>
 </blockquote>
-<p>We do multiple continuous integration. We do unit-testing, build and push docker images, run load test on deployed model using locust, codechecking via ruff, and model testing. All tests are done on ubuntu, except the unit-testing which is done on ubuntu, windows and mac operating systems. The unit-testing also runs on two python versions, namely 3.11 and 3.12. Whenever we need to install dependencies, we use caching to speed things up. Here is a link to the model testing workflow: https://github.com/arnormoncada/mlops-plant-seedlings/blob/main/.github/workflows/stage_model.yaml </p>
+<p>We do multiple continuous integration. We do unit-testing, build and push docker images, run load test on deployed model using locust, codechecking via ruff, and model testing. All tests are done on ubuntu, except the unit-testing which is done on ubuntu, windows and mac operating systems. The unit-testing also runs on two python versions, namely 3.11 and 3.12. Whenever we need to install dependencies, we use caching to speed things up. Here is a link to the model testing workflow: https://github.com/arnormoncada/mlops-plant-seedlings/blob/main/.github/workflows/stage_model.yaml. We have organized the continous integrations into their own seperate file for easy overview and handeling. Although most of the tests only run on ubuntu and one version of Python, the tests take a while to complete. This can be very annoying although they make it harder for the pushed code to fail, so in the end the waiting time is not that bad considering the consequences there can be without them. </p>
+<p>Although we have what some would say were a lot of workflows, we could definately have added more, for instance a workflow that does the data drifting automatically if data is added somewhere in the process. This could ensure early on that our model's data input stays within expected margins.</p>
 <h2>Running code and tracking experiments</h2>
 <blockquote>
 <p>In the following section we are interested in learning more about the experimental setup for running your code and
@@ -252,7 +254,7 @@ especially the reproducibility of your experiments.</p>
 <em>one would have to do ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>We made use of config files. Whenever an experiment is run, multiple print statements are run, which prints the contents of the config files, so that you early on can catch if that indeed was the experiment you intended to run. We also used seeding to make the training as reproducible as possible. In addition to this, all configurations were saved as satellite data, thus visible in weights and biases. Also, all final models were saved as artefacts to ensure reproducibility.</p>
+<p>We made use of config files via Hydra. Whenever an experiment is run, multiple print statements are run, which prints the contents of the config files, so that you early on can catch if that indeed was the experiment you intended to run. We also used seeding to make the training as reproducible as possible. In addition to this, all configurations were saved as satellite data, thus visible in weights and biases. Also, all final models were saved as artefacts on wandb to ensure reproducibility. As we don't use any randomization, we haven't set a seed, but regardless it can be a good idea to set one, just in case.</p>
 <h3>Question 14</h3>
 <blockquote>
 <p><strong>Upload 1 to 3 screenshots that show the experiments that you have done in W&amp;B (or another experiment tracking</strong>
@@ -268,7 +270,7 @@ We used wandbs’ sweep feature to tune hyperparameters with the bayesian method
 </blockquote>
 <p>Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the train, test, validation sets and interference time was logged. After training and evaluation the model was saved in a GCP bucket. We limit the amount of runs by defining the run count in the wand agent.</p>
 <p>The chosen metrics loss, accuracy and interference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging interference time is also important, with these metrics as context we can choose the best model.</p>
-<p>Here below you can see the results of our wandb sweeps they are really cool
+<p>Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see in the wandb webpage.
 <code>markdown
 ![title](figures/Sweep.png)</code></p>
 <h3>Question 15</h3>
@@ -332,7 +334,7 @@ Example:
 <p>Answer:</p>
 </blockquote>
 <p>We used a VM instance with a Nvidia T4 GPU with a machine type n1-standard to run training
-One of our GCP buckets contains every trained model. This way we could train models without cluttering up the github or our local machine and still share access to every model with team members. The premise behind this idea is we could see the best performing model on Wandb and then find it in the bucket as it has the same run name then deploy that. </p>
+One of our GCP buckets contains every trained model. This way we could train models without cluttering up the github or our local machine and still share access to every model with team members. The premise behind this idea is we could see the best performing model on Wandb and then find it in the bucket as it has the same run name then deploy that. We found this method to work very nicely, and is definately something we intend to use in future projects if applicable.</p>
 <h3>Question 19</h3>
 <blockquote>
 <p><strong>Insert 1-2 images of your GCP bucket, such that we can see what data you have stored in it.</strong>
@@ -348,14 +350,16 @@ Here below is the GCP bucket of all our trained models
 <strong>stored. You can take inspiration from <a href="figures/registry.png">this figure</a>.</strong></p>
 <p>Answer:</p>
 </blockquote>
-<p>Arnór will provide picture</p>
+<p><img alt="artifact-registry_01" src="./figures/artifact_01.png" /></p>
+<p><img alt="artifact-registry_02" src="./figures/artifact_02.png" /></p>
 <h3>Question 21</h3>
 <blockquote>
 <p><strong>Upload 1-2 images of your GCP cloud build history, so we can see the history of the images that have been build in</strong>
 <strong>your project. You can take inspiration from <a href="figures/build.png">this figure</a>.</strong></p>
 <p>Answer:</p>
 </blockquote>
-<p>Arnór will provide pocture</p>
+<p><img alt="cloud-build_01" src="./figures/cloudbuild_01.png" />
+<img alt="cloud-build_02" src="./figures/cloudbuild_02.png" /></p>
 <h3>Question 22</h3>
 <blockquote>
 <p><strong>Did you manage to train your model in the cloud using either the Engine or Vertex AI? If yes, explain how you did</strong>
@@ -416,7 +420,8 @@ https://plant-seedlings-api-1034288317994.europe-west1.run.app/</p>
 <p>Answer:</p>
 </blockquote>
 <p>Yes, we wrote integration tests and performance tests for the api. </p>
-<p>The performance tests were creating using locust. Each endpoint was load tested with specific weights. With the predict endpoint having the highest weight and three separate tests for each available model, since this is the most important endpoint. The performance tests were also added to github actions as a separate workflow which triggers on merges to main and stores the results as an artifact., It does the performance test on the api deployed to google cloud. An example result can be seen here (ARNÓR PROVIDE HTML TABLE FILE)</p>
+<p>The performance tests were creating using locust. Each endpoint was load tested with specific weights. With the predict endpoint having the highest weight and three separate tests for each available model, since this is the most important endpoint. The performance tests were also added to github actions as a separate workflow which triggers on merges to main and stores the results as an artifact., It does the performance test on the api deployed to google cloud. An example result from one of the github workflows can be seen here:</p>
+<p><img alt="locust-artifact" src="./figures/locust_artifact.png" /></p>
 <p>Basic Integration tests were added to test the endpoints. The aim was to make test what could be considered deterministic for the api, i.e. the status codes and response schemas. This was also a part of github actions.</p>
 <h3>Question 26</h3>
 <blockquote>
@@ -451,7 +456,7 @@ plant_image_size = Summary("plant_image_size", "Size of the plant image inputs",
 <em>costing the most was ... due to ... . Working in the cloud was ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>--- question 27 fill here ---</p>
+<p>Not all group members were using the cloud, as we didn't do much training on the cloud. In reality we didn't end up using many rescources regardless in the cloud. We have ended up using around 2$, so really not that much.</p>
 <h3>Question 28</h3>
 <blockquote>
 <p><strong>Did you implement anything extra in your project that is not covered by other questions? Maybe you implemented</strong>
@@ -476,7 +481,8 @@ first had to extract image features from our dataset and save it in a csv file. 
 <em>Whenever we commit code and push to GitHub, it auto triggers ... and ... . From there the diagram shows ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>--- question 29 fill here ---</p>
+<p>The starting point of the diagram is our dev, which points to our project, DVC and github. It points to our project because we as developers, develop code, and to github because that is were we do version control and store our code. In our code, we have utilized cookiecutter for the project template, WandB for logging, hydra for configs, timm for pretrained image models and docker for containerization. </p>
+<p>Then from github, a lot of continous integration stuff happens. We have github actions, with our workflows, coverage for testing our code, and pep8 for linting. In our workflows we have also added continous cloud deployment, which brings us to the cloud section of the diagram. As explained earlier, </p>
 <h3>Question 30</h3>
 <blockquote>
 <p><strong>Discuss the overall struggles of the project. Where did you spend most time and what did you do to overcome these</strong>
