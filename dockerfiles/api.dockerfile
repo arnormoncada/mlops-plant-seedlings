@@ -9,6 +9,7 @@ COPY src src/
 COPY requirements.txt requirements.txt
 COPY pyproject.toml pyproject.toml
 COPY models models/
+COPY data_drifting data_drifting/
 
 WORKDIR /
 RUN pip install -r requirements.txt --no-cache-dir --verbose
