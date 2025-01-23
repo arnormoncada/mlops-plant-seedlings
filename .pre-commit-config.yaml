@@ -1,12 +1,23 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
-    -   id: check-yaml
-    -   id: check-added-large-files
-    -   id: check-json
-    -   id: check-merge-conflict
-    -   id: check-toml
-    -   id: requirements-txt-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: requirements-txt-fixer
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.7
+    hooks:
+      # Try to fix what is possible
+      - id: ruff
+        args: ["--fix"]
+      # Perform formatting updates
+      - id: ruff-format
+      # Validate if all is fine with preview mode 🐕
+      - id: ruff
