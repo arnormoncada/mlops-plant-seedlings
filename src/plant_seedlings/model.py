@@ -15,6 +15,7 @@ class timm_model(nn.Module):
 
         self.model = timm.create_model(model_name, pretrained=True, num_classes=num_classes)
         # Freeze all layers except the final layer
+        print("Freezing layers")
         for param in self.model.parameters():
             param.requires_grad = False
 

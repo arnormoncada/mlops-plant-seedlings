@@ -1,4 +1,5 @@
-_target_: timm.create_model
+# _target_: timm.create_model
+_target_: model.timm_model
 model_name: mobilenetv3_small_050
-pretrained: True
-# num_classes: 12
+# pretrained: True
+num_classes: 12
