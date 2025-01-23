@@ -54,7 +54,7 @@ def train() -> None:
         model_name = "custom"
 
     run = wandb.init(
-        project="Plant-seedlings",
+        project="Test_DeleteLater",
         config={
             "lr": cfg.optimizer["lr"],
             "batch_size": hparams["batch_size"],

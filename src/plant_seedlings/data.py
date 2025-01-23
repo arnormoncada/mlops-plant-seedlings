@@ -14,13 +14,13 @@ def plant_seed_preprocess(raw_data_path: str, processed_data_path: str) -> None:
 
     dataset = datasets.ImageFolder(root=raw_data_path, transform=transform)
 
-    with initialize(config_path="../../configs", version_base="1.3"):
+    with initialize(config_path="../../configs", version_base=None):
         cfg = compose(config_name="config.yaml")
 
     hparams = cfg.training
-    
-    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [hparams["train_size"], 
-                                                                                       hparams["val_size"], 
+
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [hparams["train_size"],
+                                                                                       hparams["val_size"],
                                                                                        hparams["test_size"]])
 
     # Create DataLoaders for the train and validation sets
