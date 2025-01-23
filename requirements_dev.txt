@@ -28,7 +28,7 @@ mkdocstrings-python==1.12.2
 pre-commit==3.5.0
 
 # prometheus
-prometheus_client==0.21.1
+prometheus-client==0.21.1
 
 # testing
 pytest==7.4.3
