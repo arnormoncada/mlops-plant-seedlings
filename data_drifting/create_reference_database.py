@@ -5,22 +5,12 @@ import pandas as pd
 
 sys.path.insert(0, "src/plant_seedlings")
 from data import plant_seedlings
+from utils import extract_features
 
 
 # from src.plant_seedlings.data import plant_seedlings
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-
-
-def extract_features(images):
-    """Extract basic image features from a set of images."""
-    features = []
-    for img in images:
-        avg_brightness = np.mean(img)
-        contrast = np.std(img)
-        sharpness = np.mean(np.abs(np.gradient(img)))
-        features.append([avg_brightness, contrast, sharpness])
-    return np.round(np.array(features), 5)
 
 
 def create_reference_database():
