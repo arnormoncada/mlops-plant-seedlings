@@ -14,6 +14,17 @@ The data we plan to use is found at
 https://www.kaggle.com/datasets/vbookshelf/v2-plant-seedlings-dataset
 ```
 which has 12 classes with 5539 images. These classes consist of different common plant species in Denmark. In this dataset the classes have some imbalance. 
+The data is structured in one folder for each class, which should all be placed in ```data/raw ``` such that the structure becomes:
+
+```txt
+├── data/                     # Data directory
+│   ├── processed
+│   └── raw
+│       ├── Black-grass
+│       ├── Charlock
+        ...
+```
+
 ## Model 
 For this project, we will use a pre-trained model from the TIMM package as our base architecture. Pre-trained models, such as ResNet, EfficientNet, or ConvNeXt
 ## Project structure
