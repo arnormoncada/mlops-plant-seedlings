@@ -15,10 +15,10 @@ NUM_CLASSES = 12
 def test_my_dataset():
     """Test the MyDataset class."""
 
-    train_loader, val_loader = plant_seedlings(data_path="data/processed")
+    train_loader, val_loader, test_loader = plant_seedlings(data_path="data/processed")
 
     # Concatenate the train and validation sets
-    combined_dataset = ConcatDataset([train_loader.dataset, val_loader.dataset])
+    combined_dataset = ConcatDataset([train_loader.dataset, val_loader.dataset, test_loader.dataset])
 
     # Assert that the dataset is an instance of the Dataset class
     assert isinstance(combined_dataset, Dataset), f"Expected Dataset, but got {type(combined_dataset)}"

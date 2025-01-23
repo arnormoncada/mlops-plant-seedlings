@@ -26,6 +26,11 @@ def train(ctx: Context) -> None:
     """Train model."""
     ctx.run(f"python src/{PROJECT_NAME}/train.py", echo=True, pty=not WINDOWS)
 
+@task
+def evaluate(ctx: Context) -> None:
+    """Evaluate model."""
+    ctx.run(f"python src/{PROJECT_NAME}/evaluate.py", echo=True, pty=not WINDOWS)
+
 
 @task
 def test(ctx: Context) -> None:
@@ -33,6 +38,11 @@ def test(ctx: Context) -> None:
     ctx.run("coverage run -m pytest tests/", echo=True, pty=not WINDOWS)
     ctx.run("coverage report -m", echo=True, pty=not WINDOWS)
     ctx.run("coverage html", echo=True, pty=not WINDOWS)
+
+@task
+def data(ctx: Context) -> None:
+    """Evaluate model."""
+    ctx.run(f"python src/{PROJECT_NAME}/data.py", echo=True, pty=not WINDOWS)
 
 
 @task
