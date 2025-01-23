@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, 'src/plant_seedlings')
+sys.path.insert(0, "src/plant_seedlings")
 from data import plant_seedlings
 from utils import extract_features
 
@@ -14,14 +14,12 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.ba
 
 
 def create_reference_database():
-
     train_loader, val_loader, test_loader = plant_seedlings(data_path="data/processed")
     loaders = [train_loader, val_loader, test_loader]
 
     features = []
     for loader in loaders:
         for i, (img, target) in enumerate(loader):
-
             if (i + 1) % (len(loader) // 5) == 0:
                 print(f"Iteration {i + 1} out of {len(loader)}")
             img = img.numpy(force=True)

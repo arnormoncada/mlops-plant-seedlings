@@ -194,3 +194,6 @@ cython_debug/
 
 # Ignore model files
 /models
+
+# Ignore GCP credentials
+dtumlops-447815-e1c2177b8aef.json
