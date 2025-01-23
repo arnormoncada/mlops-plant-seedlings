@@ -85,6 +85,6 @@ def api(ctx: Context, port: int = 8000) -> None:
 def locust(ctx: Context, api_url: str = "http://localhost:8000") -> None:
     """Launches the locust performance test."""
     ctx.run(
-        "locust -f tests/performancetests/locustfile.py \
-    --headless --users 10 --spawn-rate 1 --run-time 1m --host http://localhost:8000/"
+        f"locust -f tests/performancetests/locustfile.py \
+    --headless --users 10 --spawn-rate 1 --run-time 1m --host {api_url}"
     )
