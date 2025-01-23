@@ -25,7 +25,7 @@ The data is structured in one folder for each class, which should all be placed 
 │       ├── Charlock
         ...
 ```
-To process data, execute
+To process data, execute:
 ```bash
 python src/plant_seedlings/data.py
 ```
@@ -36,7 +36,7 @@ To run the project, start by creating a ```.env``` file containing the folloring
 WANDB_API_KEY=<your api key>
 WANDB_PROJECT=<your project name>
 ```
-To finish project setup, execute
+To finish project setup, execute:
 ```bash
 invoke requirements
 ```
@@ -50,7 +50,8 @@ In the project we make use of two pretrained models and one custom model:
 
 ```custom:```         Basic nn.Module Model
 
-Included in the project is one set of weights for each model trained on the data set. Additional training is setup using ```config.yaml```, executed by
+Included in the project is one set of weights for each model trained on the data set. Additional training is setup using ```config.yaml``` and ```training_conf.yaml```.
+To start training, execute:
 ```bash
 python src/plant_seedlings/train.py
 ```
