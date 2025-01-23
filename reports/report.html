@@ -270,9 +270,8 @@ We used wandbs’ sweep feature to tune hyperparameters with the bayesian method
 </blockquote>
 <p>Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the train, test, validation sets and interference time was logged. After training and evaluation the model was saved in a GCP bucket. We limit the amount of runs by defining the run count in the wand agent.</p>
 <p>The chosen metrics loss, accuracy and interference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging interference time is also important, with these metrics as context we can choose the best model.</p>
-<p>Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see in the wandb webpage.
-<code>markdown
-![title](figures/Sweep.png)</code></p>
+<p>Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see in the wandb webpage.</p>
+<p><img alt="title" src="figures/Sweep.png" /></p>
 <h3>Question 15</h3>
 <blockquote>
 <p><strong>Docker is an important tool for creating containerized applications. Explain how you used docker in your</strong>
@@ -341,9 +340,10 @@ One of our GCP buckets contains every trained model. This way we could train mod
 <strong>You can take inspiration from <a href="figures/bucket.png">this figure</a>.</strong></p>
 <p>Answer: 
 Here below is the GCP bucket of all our trained models
-(image of GCP bucket of models)</p>
+<img alt="bucket_model" src="./figures/GCP_models.jpg" /></p>
 </blockquote>
-<p>(Image of API GCP bucket)</p>
+<p>Here below is the GCP bucket of all our stored cloud builds.
+<img alt="bucket_adm" src="./figures/adm_bucket.png" /></p>
 <h3>Question 20</h3>
 <blockquote>
 <p><strong>Upload 1-2 images of your GCP artifact registry, such that we can see the different docker images that you have</strong>
@@ -369,8 +369,7 @@ Here below is the GCP bucket of all our trained models
 <em>We managed to train our model in the cloud using the Engine. We did this by ... . The reason we choose the Engine</em>
 <em>was because ...</em></p>
 <p>Answer:
-Our first venture was to use VertexAI to do model training and hyperparameters sweeps, logging and saving models in the artifact registry, an ambitious task and it was too ambitious. We ran into problems integrating our code into a format vertexAI can work with and the course timeline was too tight to solve the issue we decided to pivot and use a VM instance to do model training. But once again we landed in internet difficulties copying the data over to the VM instance after 4 hours the data was still downloading into the VM instance. Thankfully one team member had a nvidia card that was cuda capable gtx 3060 and we did the sweep with that.
---- question 22 fill here ---</p>
+Our first venture was to use VertexAI to do model training and hyperparameters sweeps, logging and saving models in the artifact registry, an ambitious task and it was too ambitious. We ran into problems integrating our code into a format vertexAI can work with and the course timeline was too tight to solve the issue we decided to pivot and use a VM instance to do model training. But once again we landed in internet difficulties copying the data over to the VM instance after 4 hours the data was still downloading into the VM instance. Thankfully one team member had a nvidia card that was cuda capable gtx 3060 and we did the sweep with that.</p>
 </blockquote>
 <h2>Deployment</h2>
 <h3>Question 23</h3>
@@ -456,7 +455,10 @@ plant_image_size = Summary("plant_image_size", "Size of the plant image inputs",
 <em>costing the most was ... due to ... . Working in the cloud was ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>Not all group members were using the cloud, as we didn't do much training on the cloud. In reality we didn't end up using many rescources regardless in the cloud. We have ended up using around 2$, so really not that much.</p>
+<p>Not all group members were using the cloud, as we didn't do much training on the cloud. There were pretty much two members in charge of cloud related tasks.</p>
+<p>For one of the members the cost was around 2$. The three billed services were all pretty close to each other (cloud run, articat registry and cloud storage). However the most expensive service was the cloud storage, coming around 1$, which was most likely a result of the stored cloud builds in the bucket. </p>
+<p>The other team member used 0.46 cents in cloud compute for a VM instance to train models but since that did not work out as planned we trained on a local machine and 0.06 cents was spent for a bucket for model storage.</p>
+<p>In reality we didn't end up using many rescources regardless in the cloud.</p>
 <h3>Question 28</h3>
 <blockquote>
 <p><strong>Did you implement anything extra in your project that is not covered by other questions? Maybe you implemented</strong>
@@ -493,6 +495,7 @@ first had to extract image features from our dataset and save it in a csv file. 
 <p>Answer:</p>
 </blockquote>
 <p>One of the problems we had to deal with was GCP and getting it to work with our python scripts. One helpful tool was the tutorial side page in GCP and using google's gemini to ask questions. But one problem constantly encountered was failing to upload a model to the GCP bucket and this was due to the poor internet connection of one team member to solve this code was added to break the upload process into 5 MB chunks. </p>
+<p>One big challenge from week 1 was setting up the remote repository for dvc in google drive (as we did not learn about buckets yet). Mainly the part about oauth consent screen and creating an app client and assigning everyone to it as a test user. This was a bit of a hassle as we were all still unfamiliar with the GCP interface and how to navigate it. There was no special secret to overcoming it, just a lot of trial and error and reading the documentation. But in the end it was a good learning experience and we got it to work.</p>
 <h3>Question 31</h3>
 <blockquote>
 <p><strong>State the individual contributions of each team member. This is required information from DTU, because we need to</strong>
@@ -507,11 +510,11 @@ first had to extract image features from our dataset and save it in a csv file. 
 <em>We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.</em>
 Answer:</p>
 </blockquote>
-<p>We shared the workload of the different parallel operations tasks but if we were to appoint members to
-these tasks it would be more or less something like the following:
-Student s241645 (Arnór) was in charge of GCP runs, builds and monitoring. API development, testing, Github actions and data version control.
-Student s242766 (Dagur) was in charge of 
-Student s232735 (Jason) was in charge of sweep configs, model GCP bucket and cloud training.
-Student s204225 (Viktor) was in charge of training scripts, W&amp;B log overview
-Student s204218 (Jonas) was in charge of training scripts, data drifting evaluation, config configuration</p>
+<p>We shared the workload of the different parallel operations tasks and everyone helped each other out as needed, but if we were to appoint members to
+these tasks it would be more or less something like the following:</p>
+<p>Student s241645 (Arnór) was in charge of GCP runs, builds and monitoring. API development, testing, Github actions and data version control.</p>
+<p>Student s242766 (Dagur) was in charge of </p>
+<p>Student s232735 (Jason) was in charge of sweep configs, model GCP bucket and cloud training.</p>
+<p>Student s204225 (Viktor) was in charge of training scripts, W&amp;B log overview</p>
+<p>Student s204218 (Jonas) was in charge of training scripts, data drifting evaluation, config configuration</p>
 <p>GitHub Copilot was used for auto completing simple/trivial lines of code.</p>
