@@ -247,7 +247,7 @@ From the cookiecutter template we have filled out the .github, configs, data, do
 > Answer:
 
 
-We used ruff for linting and to conform to pep8. Ruff was also a part of our pre-commit and used in github actions to enforce it. We also used the built-in python type hints for typing to the best of our abilities, but we did not enforce it via external packages or in the github actions workflow. The code was documented to the best of our abilities through comments which we crafted ourselves, but github copilot did come in handy there as it sped up the process. Most methods and functions also used doc strings to simply explain the purpose of the methods.
+We used ruff for linting and to conform to pep8. Ruff was also a part of our pre-commit and used in github actions to enforce it. We also used the built-in python type hints for typing, and applied it to the best of our abilities, but we did not enforce it via external packages or in the github actions workflow. The code was documented to the best of our abilities through comments which we crafted ourselves, but github copilot did come in handy there as it sped up the process. Most methods and functions also used doc strings to simply explain the purpose of the methods.
 
 These concepts are important in larger projects because it streamlines the code, and makes it more readable for other users. It also has the advantage that it makes the code easier to come back to and understand if one have been away from it for a year or more. Especially in larger projects, where multiple scripts communicate with each other and everything simply becomes more complex, the above mentioned concepts are almost a necessity, unless one enjoys time wasting and general chaos.
 
@@ -350,7 +350,17 @@ It's good to note that we have the dvc dataset stored in google drive rather tha
 > Answer:
 
 
-We do multiple continuous integration. We do unit-testing, build and push docker images, run load test on deployed model using locust, codechecking via ruff, and model testing. All tests are done on ubuntu, except the unit-testing which is done on ubuntu, windows and mac operating systems. The unit-testing also runs on two python versions, namely 3.11 and 3.12. Whenever we need to install dependencies, we use caching to speed things up. Here is a link to the model testing workflow: https://github.com/arnormoncada/mlops-plant-seedlings/blob/main/.github/workflows/stage_model.yaml. We have organized the continuous integrations into their own seperate file for easy overview and handling. Most of the tests only run on ubuntu and one version of Python, the tests take a while to complete. This can be very annoying, although they make it harder for the pushed code to fail, so in the end the waiting time is not that bad considering the consequences there can be without them. 
+We do multiple continuous integration. 
+
+We do unit-testing, build and push docker images, run load test on the deployed api using locust, linting via ruff, pre-commit, and model testing. 
+
+All workflows are done on ubuntu, except the unit-testing which is done on ubuntu, windows and mac operating systems. The unit-testing also runs on two python versions, namely 3.11 and 3.12. Whenever we need to install dependencies, we use caching to speed things up. 
+
+Here is a link to the model testing workflow: https://github.com/arnormoncada/mlops-plant-seedlings/blob/main/.github/workflows/stage_model.yaml. 
+
+We have organized the continuous integrations into their own seperate file for easy overview and handling. Even though we have multiple workflows, they do not take long to run, as they run in parallel. We do ignore the data tests in testing workflow, as there has been an issue with the setup-dvc@v1 action and has not been adressed. Meaning our dvc pulls in the workflow were not dependable and could fail at any time.
+
+https://github.com/iterative/setup-dvc/issues/66
 
 Although we have what some would say were a lot of workflows, we could definitely have added more, for instance a workflow that does the data drifting automatically if data is added somewhere in the process. This could ensure early on that our model's data input stays within expected margins.
 
@@ -394,7 +404,7 @@ We made use of config files. The main config file "config.yaml" was used to spec
 > Answer:
 
 
-We made use of config files via Hydra. Whenever an experiment is started, multiple print statements are run that display the contents of the config files, so that you can catch if that was indeed the experiment you intended to run. We also used seeding to make the training as reproducible as possible. In addition to this, all configurations were saved as satellite data, thus visible in weights and biases. All final models were saved as artefacts on wandb to ensure reproducibility. As we don't use any randomization we haven't set a seed but regardless it can be a good idea to set one, just in case.
+We made use of config files via Hydra. Whenever an experiment is started, multiple print statements are run that display the contents of the config files, so that you can catch if that was indeed the experiment you intended to run. We also used seeding to make the training as reproducible as possible. In addition to this, all configurations were saved as satellite data, thus visible in weights and biases. All final models were saved as artifacts on wandb to ensure reproducibility. As we don't use any randomization we haven't set a seed but regardless it can be a good idea to set one, just in case.
 
 
 ### Question 14
@@ -508,13 +518,19 @@ One example of this type of visual inspection and direct data investigation was 
 > Answer:
 
 
-APIs & Services: Manages API access and integrations for Google Cloud Services.
-IAM & Admin: Identity and access management for cloud projects. Management of permissions, roles and access control for cloud resources.
-Cloud Run: Platform to run and scale containerized applications.
-Artifact Registry: A service/place to store and manage artifacts e.g. docker images used for deployment. 
-Cloud Build: A platform for executing automated build pipelines, allowing you to build and deploy images. Monitoring: A out of the box platform for metric collection and dashboards. Where you can monitor the performance and health of your deployed services and set alerts.
-Bucket: A basic data storage container, usually used for storing things like files and multimedia files. 
-Compute Engine: Hosting service which lets you create and use VMs on the google cloud infrastructure with customizable hardware and configs. Easily scalable also.
+**APIs & Services:** Manages API access and integrations for Google Cloud Services.
+
+**IAM & Admin:** Identity and access management for cloud projects. Management of permissions, roles and access control for cloud resources.
+
+**Cloud Run:** Platform to run and scale containerized applications.
+
+**Artifact Registry:** A service/place to store and manage artifacts e.g. docker images used for deployment. 
+
+**Cloud Build:** A platform for executing automated build pipelines, allowing you to build and deploy images. Monitoring: A out of the box platform for metric collection and dashboards. Where you can monitor the performance and health of your deployed services and set alerts.
+
+**Bucket:** A basic data storage container, usually used for storing things like files and multimedia files. 
+
+**Compute Engine:** Hosting service which lets you create and use VMs on the google cloud infrastructure with customizable hardware and configs. Easily scalable also.
 
 
 ### Question 18
@@ -653,6 +669,7 @@ https://plant-seedlings-api-1034288317994.europe-west1.run.app/docs
 > *`curl -X POST -F "file=@file.json"<weburl>`*
 >
 > Answer:
+
 Yes, the api was first developed and "deployed" locally, and then a cloudbuild.yaml was defined to build the api image, upload it to the artifact registry and then deploy the service using cloudbuild.
 
 The github repository was then connected to the cloud run service for continuous deployment. Meaning whenever changes were pushed on main, the service was built and redeployed using the before mentioned cloudbuild.yaml.
@@ -708,8 +725,11 @@ Basic Integration tests were added to test the endpoints. The aim was to make te
 Yes we were able to implement some monitoring for the api. We instrumented our API with prometheus. We defined the following metrics to be stored:
 
 error_counter = Counter("errors", "Number of errors", ["endpoint", "status_code"], registry=MY_REGISTRY)
+
 request_counter = Counter("requests", "Number of requests", ["endpoint", "status_code"], registry=MY_REGISTRY)
+
 request_latency = Histogram("request_latency_seconds", "Request latency", ["endpoint"], registry=MY_REGISTRY)
+
 plant_image_size = Summary("plant_image_size", "Size of the plant image inputs", registry=MY_REGISTRY)
 
 
@@ -722,8 +742,10 @@ These metrics are then accessible at: https://plant-seedlings-api-1034288317994.
 We were not able to setup cloud monitoring for these instrumented metrics with the sidecar and/or kuberentes approach as it clashed with our current continuous deployment setup and we would’ve had to change too many things with little time left in the course.
 
 
-We did however create some system alerts if the API is not behaving as expected. Such as if the number of 500 errors exceeded some threshold or if the latency of requests is too high. It would then alert us through email.
+We did however create some system alerts if the API is not behaving as expected. Such as if the number of 500 errors exceeded some threshold or if the latency of requests is too high. It would then alert us through email. Here below is an example alert we recieved and it's resolution:
 
+![alert](./figures/alert.jpg)
+![resolution](./figures/resolved.jpg)
 
 
 
@@ -858,4 +880,5 @@ Student s204218 (Jonas) was in charge of training scripts, data drifting evaluat
 
 
 GitHub Copilot was used for auto completing simple/trivial lines of code.
+ChatGPT was used for debugging and discussing the project in general.
 
