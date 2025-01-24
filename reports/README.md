@@ -433,10 +433,10 @@ Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the
 The chosen metrics loss, accuracy and interference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging interference time is also important, with these metrics as context we can choose the best model.
 
 
-Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see it online in the wandb webpage.
+Here below you can see the results of our wandb sweeps they are really cool we think. It might be hard to see which exact model is performing great, but that is much, much easier to see in the wandb webpage.
 
 
-![title](./figures/Sweep.png)
+![sweep_image](./figures/Sweep.png)
 
 
 
@@ -815,10 +815,15 @@ first had to extract image features from our dataset and save it in a csv file. 
 > Answer:
 
 
-The starting point of the diagram is our dev, which points to our project, DVC and github. It points to our project because we as developers, develop code, and to github because that is were we do version control and store our code. In our code, we have utilized cookiecutter for the project template, WandB for logging, hydra for configs, timm for pretrained image models and docker for containerization. 
+The starting point of the diagram is our dev, which points to our project, DVC and github. It points to our project because we as developers, develop code, and to github because that is were we do version control and store our code. In our code, we have utilized cookiecutter for the project template, WandB for logging, hydra for configs, timm for pretrained image models and docker for containerization.
 
-Then from github, a lot of continuous integration stuff happens. We have github actions, with our workflows, coverage for testing our code, and pep8 for linting. In our workflows we have also added continuous cloud deployment, which brings us to the cloud section of the diagram. As explained earlier, 
+Then from github, a lot of continuous integration stuff happens. We have github actions, with our workflows, coverage for testing our code, and pep8 for linting. In our workflows we have also added continuous cloud deployment, which brings us to the cloud section of the diagram. 
 
+As explained earlier in question 17, we have used several services from the GCP, so we will not explain them further in this question. But with the cloud services, we have been able to deploy our model via the cloud run and build, and, together with some API stuff, this brings us to the next section of the diagram.
+
+In the API, the user is able to make a query, and test our model on any image they so wish. Ideally, it should be an image that is similar to our data, else it won't really make sense. A user is also able to clone our git repository. Here they will find everything they need in order to try and run our models (except the data). To aquire the data, they could do a DVC pull, but due to authorization isssues, this method is mostly intended for other developers. A user should therefore try and download the dataset via Kaggle instead, if they want to try and train another model on the same data. The diagram can be seen below:
+
+![mlops-diagram](./figures/mlops_drawio.png)
 
 ### Question 30
 

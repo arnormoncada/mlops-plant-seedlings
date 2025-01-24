@@ -275,8 +275,8 @@ especially the reproducibility of your experiments.</p>
 <p>We used wandb’s sweep feature to tune hyperparameters with the bayesian method. To configure the sweep we used sweep_config.yaml to maximize validation accuracy. The tunable parameters were model type, optimizer type, learning rate, momentum, weight decay, step size and batch size.</p>
 <p>Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the train, test, validation sets and interference time was logged. After training and evaluation the model was saved in a GCP bucket. We limit the amount of runs by defining the run count in the wand agent.</p>
 <p>The chosen metrics loss, accuracy and interference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging interference time is also important, with these metrics as context we can choose the best model.</p>
-<p>Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see it online in the wandb webpage.</p>
-<p><img alt="title" src="./figures/Sweep.png" /></p>
+<p>Here below you can see the results of our wandb sweeps they are really cool we think. It might be hard to see which exact model is performing great, but that is much, much easier to see in the wandb webpage.</p>
+<p><img alt="sweep_image" src="./figures/Sweep.png" /></p>
 <h3>Question 15</h3>
 <blockquote>
 <p><strong>Docker is an important tool for creating containerized applications. Explain how you used docker in your</strong>
@@ -489,8 +489,11 @@ first had to extract image features from our dataset and save it in a csv file. 
 <em>Whenever we commit code and push to GitHub, it auto triggers ... and ... . From there the diagram shows ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>The starting point of the diagram is our dev, which points to our project, DVC and github. It points to our project because we as developers, develop code, and to github because that is were we do version control and store our code. In our code, we have utilized cookiecutter for the project template, WandB for logging, hydra for configs, timm for pretrained image models and docker for containerization. </p>
-<p>Then from github, a lot of continuous integration stuff happens. We have github actions, with our workflows, coverage for testing our code, and pep8 for linting. In our workflows we have also added continuous cloud deployment, which brings us to the cloud section of the diagram. As explained earlier, </p>
+<p>The starting point of the diagram is our dev, which points to our project, DVC and github. It points to our project because we as developers, develop code, and to github because that is were we do version control and store our code. In our code, we have utilized cookiecutter for the project template, WandB for logging, hydra for configs, timm for pretrained image models and docker for containerization.</p>
+<p>Then from github, a lot of continuous integration stuff happens. We have github actions, with our workflows, coverage for testing our code, and pep8 for linting. In our workflows we have also added continuous cloud deployment, which brings us to the cloud section of the diagram. </p>
+<p>As explained earlier in question 17, we have used several services from the GCP, so we will not explain them further in this question. But with the cloud services, we have been able to deploy our model via the cloud run and build, and, together with some API stuff, this brings us to the next section of the diagram.</p>
+<p>In the API, the user is able to make a query, and test our model on any image they so wish. Ideally, it should be an image that is similar to our data, else it won't really make sense. A user is also able to clone our git repository. Here they will find everything they need in order to try and run our models (except the data). To aquire the data, they could do a DVC pull, but due to authorization isssues, this method is mostly intended for other developers. A user should therefore try and download the dataset via Kaggle instead, if they want to try and train another model on the same data. The diagram can be seen below:</p>
+<p><img alt="mlops-diagram" src="./figures/mlops_drawio.png" /></p>
 <h3>Question 30</h3>
 <blockquote>
 <p><strong>Discuss the overall struggles of the project. Where did you spend most time and what did you do to overcome these</strong>
