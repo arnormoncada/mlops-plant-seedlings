@@ -821,6 +821,7 @@ One of the problems we had to deal with was GCP and getting it to work with our 
 One big challenge from week 1 was setting up the remote repository for dvc in google drive (as we did not learn about buckets yet). Mainly the part about oauth consent screen and creating an app client and assigning everyone to it as a test user. This was a bit of a hassle as we were all still unfamiliar with the GCP interface and how to navigate it. There was no special secret to overcoming it, just a lot of trial and error and reading the documentation. But in the end it was a good learning experience and we got it to work.
 
 
+Another problem was the docker train images taking up way too much space and taking very long to build. We did not end up using the train docker image much so we only had to build and run it once just to make sure that it was done correctly. If it was not done correctly, i.e. problem with the dockerfile, we had to change it and rebuild the image. This repeated rebuilding ended up taking ~60 gb of space locally for one of the team members and completely filling the local storage. Building this image also took ~15 minutes. We overcame this by brute force, when the disk was full everything was deleted, and then after a couple more tries we got the train images to work.
 
 ### Question 31
 
