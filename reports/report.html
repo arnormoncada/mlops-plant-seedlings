@@ -436,7 +436,7 @@ https://plant-seedlings-api-1034288317994.europe-west1.run.app/</p>
 <em>measure ... and ... that would inform us about this ... behaviour of our application.</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>Yes we were able to implement some monitoring for the api. We instrumented our API with prometheus. We defined the following metrics to be stored:</p>
+<p>Yes we implement some monitoring for the api. We instrumented our API with prometheus. We defined the following metrics to be stored:</p>
 <p>error_counter = Counter("errors", "Number of errors", ["endpoint", "status_code"], registry=MY_REGISTRY)</p>
 <p>request_counter = Counter("requests", "Number of requests", ["endpoint", "status_code"], registry=MY_REGISTRY)</p>
 <p>request_latency = Histogram("request_latency_seconds", "Request latency", ["endpoint"], registry=MY_REGISTRY)</p>

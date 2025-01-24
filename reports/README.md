@@ -722,7 +722,7 @@ Basic Integration tests were added to test the endpoints. The aim was to make te
 > Answer:
 
 
-Yes we were able to implement some monitoring for the api. We instrumented our API with prometheus. We defined the following metrics to be stored:
+Yes we implement some monitoring for the api. We instrumented our API with prometheus. We defined the following metrics to be stored:
 
 error_counter = Counter("errors", "Number of errors", ["endpoint", "status_code"], registry=MY_REGISTRY)
 
