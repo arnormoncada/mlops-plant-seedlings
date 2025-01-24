@@ -427,10 +427,10 @@ We made use of config files via Hydra. Whenever an experiment is started, multip
 We used wandb’s sweep feature to tune hyperparameters with the bayesian method. To configure the sweep we used sweep_config.yaml to maximize validation accuracy. The tunable parameters were model type, optimizer type, learning rate, momentum, weight decay, step size and batch size.
 
 
-Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the train, test, validation sets and interference time was logged. After training and evaluation the model was saved in a GCP bucket. We limit the amount of runs by defining the run count in the wand agent.
+Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the train, test, validation sets and inference time was logged. After training and evaluation the model was saved in a GCP bucket. We limit the amount of runs by defining the run count in the wand agent.
 
 
-The chosen metrics loss, accuracy and interference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging interference time is also important, with these metrics as context we can choose the best model.
+The chosen metrics loss, accuracy and inference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging inference time is also important, with these metrics as context we can choose the best model.
 
 
 Here below you can see the results of our wandb sweeps they are really cool we think. It might be hard to see which exact model is performing great, but that is much, much easier to see in the wandb webpage.
@@ -795,7 +795,7 @@ In reality we didn't end up using many rescources regardless in the cloud.
 
 
 We implemented drift detection, but didn’t get it to run on the cloud. Since our dataset comprised of images, we
-first had to extract image features from our dataset and save it in a csv file. We went with the simple script available in M27, where we extracted sharpness, brightness and contrast. When this was done, we altered the api script so we could make mock-up data to "simulate" new data. We tried to add around 1% of the total dataset, and according to evidently we have data-drifting, indicating that our dataset is not very robust against data drifting.
+first had to extract image features from our dataset and save it in a csv file. We went with the simple script available in M27, where we extracted sharpness, brightness and contrast. When this was done, we altered the api script so we could make mock-up data to "simulate" new data. We tried to add around 1% of the total dataset, and according to the ```evidently``` framework we have data-drifting, indicating that our dataset is not very robust against data drifting.
 
 
 ### Question 29
