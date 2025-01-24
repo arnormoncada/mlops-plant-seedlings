@@ -197,7 +197,7 @@ We used the third-party framework PyTorch Image Models (TIMM) in our project. We
 > Answer:
 
 
-We started with a requirements file that was basically the same as the course (maybe with extra packages). But as we came closer to the end of the project we decided to run pipreq to shorten the large list. To get a complete copy of our environment, a new member must run:
+We started with a single requirements file that was basically the same as the course (maybe with extra packages), but it grew pretty large pretty fast as it was just a copy of our joint conda enviroments from pip freeze. As we came closer to the end of the project we decided to run pipreq to shorten the large list and added the missing packages for the python scripts to run by hand, and added some dev packages to the dev requirements file by hand. To get a complete copy of our environment, a new member must run:
 ```
 pip install -r requirements.txt
 pip install -r requirements_dev
