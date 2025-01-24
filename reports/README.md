@@ -433,7 +433,7 @@ Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the
 The chosen metrics loss, accuracy and interference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging interference time is also important, with these metrics as context we can choose the best model.
 
 
-Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see in the wandb webpage.
+Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see it online in the wandb webpage.
 
 
 ![title](./figures/Sweep.png)
@@ -735,12 +735,9 @@ plant_image_size = Summary("plant_image_size", "Size of the plant image inputs",
 
 As can be seen an error counter and request counter was defined. Also the how long it took for requests to finish for the endpoints, and the total image size of uploaded media to the api.
 
-
 These metrics are then accessible at: https://plant-seedlings-api-1034288317994.europe-west1.run.app/metrics/
 
-
 We were not able to setup cloud monitoring for these instrumented metrics with the sidecar and/or kuberentes approach as it clashed with our current continuous deployment setup and we would’ve had to change too many things with little time left in the course.
-
 
 We did however create some system alerts if the API is not behaving as expected. Such as if the number of 500 errors exceeded some threshold or if the latency of requests is too high. It would then alert us through email. Here below is an example alert we recieved and it's resolution:
 
