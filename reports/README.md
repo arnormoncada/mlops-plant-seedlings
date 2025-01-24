@@ -436,9 +436,7 @@ The chosen metrics loss, accuracy and inference time are important in our case a
 Here below you can see the results of our wandb sweeps they are really cool we think. It might be hard to see which exact model is performing great, but that is much, much easier to see in the wandb webpage.
 
 
-![sweep_image](./figures/Sweep.png)
-
-
+![sweep_image](./figures/wandb.jpg)
 
 
 
