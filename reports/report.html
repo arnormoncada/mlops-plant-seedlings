@@ -88,7 +88,7 @@ will check the repositories and the code to verify your answers.</p>
 <li>[ ] Write some documentation for your application (M32)</li>
 <li>[ ] Publish the documentation to GitHub Pages (M32)</li>
 <li>[x] Revisit your initial project description. Did the project turn out as you wanted?</li>
-<li>[x ] Create an architectural diagram over your MLOps pipeline</li>
+<li>[x] Create an architectural diagram over your MLOps pipeline</li>
 <li>[x] Make sure all group members have an understanding about all parts of the project</li>
 <li>[x] Uploaded all your code to GitHub</li>
 </ul>
@@ -134,12 +134,12 @@ how you managed dependencies, the structure of your code and how you managed cod
 <p>Answer:</p>
 </blockquote>
 <p>We started with a requirements file that was basically the same as the course (maybe with extra packages). But as we came closer to the end of the project we decided to run pipreq to shorten the large list. To get a complete copy of our environment, a new member must run:
-pip install -r requirements.txt,
-pip install -r requirements_dev.
-pip install -e .
-These 3 are also executed with invoke requirements.</p>
-<p>To also get the data, a member must add a config.local file in the .dvc folder and run
-dvc pull
+<code>pip install -r requirements.txt
+pip install -r requirements_dev
+pip install -e</code>
+These 3 can also be executed with invoke commands.</p>
+<p>To get the data a member must add a config.local file in the .dvc folder and run
+<code>dvc pull</code>
 and accept all authentication steps. Someone outside of the project would have to download the data from kaggle (see the README file at root)</p>
 <h3>Question 5</h3>
 <blockquote>
@@ -163,7 +163,7 @@ and accept all authentication steps. Someone outside of the project would have t
 <em>concepts are important in larger projects because ... . For example, typing ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>We used ruff for linting and to conform to pep8. Ruff was also a part of our pre-commit and used in github actions to enforce it. We also used the in-built python type hints for typing to the best of our abilities, but we did not enforce it via external packages or in the github actions workflow. The code was documented to the best of our abilities through comments which we crafted ourselves, but github copilot did come in handy there as it sped up the process. Most methods and functions also used doc strings to simply explain the purpose of the methods.</p>
+<p>We used ruff for linting and to conform to pep8. Ruff was also a part of our pre-commit and used in github actions to enforce it. We also used the built-in python type hints for typing to the best of our abilities, but we did not enforce it via external packages or in the github actions workflow. The code was documented to the best of our abilities through comments which we crafted ourselves, but github copilot did come in handy there as it sped up the process. Most methods and functions also used doc strings to simply explain the purpose of the methods.</p>
 <p>These concepts are important in larger projects because it streamlines the code, and makes it more readable for other users. It also has the advantage that it makes the code easier to come back to and understand if one have been away from it for a year or more. Especially in larger projects, where multiple scripts communicate with each other and everything simply becomes more complex, the above mentioned concepts are almost a necessity, unless one enjoys time wasting and general chaos.</p>
 <h2>Version control</h2>
 <blockquote>
@@ -227,8 +227,8 @@ corporate and increase the quality of your code.</p>
 <em>here: <weblink></em></p>
 <p>Answer:</p>
 </blockquote>
-<p>We do multiple continuous integration. We do unit-testing, build and push docker images, run load test on deployed model using locust, codechecking via ruff, and model testing. All tests are done on ubuntu, except the unit-testing which is done on ubuntu, windows and mac operating systems. The unit-testing also runs on two python versions, namely 3.11 and 3.12. Whenever we need to install dependencies, we use caching to speed things up. Here is a link to the model testing workflow: https://github.com/arnormoncada/mlops-plant-seedlings/blob/main/.github/workflows/stage_model.yaml. We have organized the continous integrations into their own seperate file for easy overview and handeling. Although most of the tests only run on ubuntu and one version of Python, the tests take a while to complete. This can be very annoying although they make it harder for the pushed code to fail, so in the end the waiting time is not that bad considering the consequences there can be without them. </p>
-<p>Although we have what some would say were a lot of workflows, we could definately have added more, for instance a workflow that does the data drifting automatically if data is added somewhere in the process. This could ensure early on that our model's data input stays within expected margins.</p>
+<p>We do multiple continuous integration. We do unit-testing, build and push docker images, run load test on deployed model using locust, codechecking via ruff, and model testing. All tests are done on ubuntu, except the unit-testing which is done on ubuntu, windows and mac operating systems. The unit-testing also runs on two python versions, namely 3.11 and 3.12. Whenever we need to install dependencies, we use caching to speed things up. Here is a link to the model testing workflow: https://github.com/arnormoncada/mlops-plant-seedlings/blob/main/.github/workflows/stage_model.yaml. We have organized the continuous integrations into their own seperate file for easy overview and handling. Most of the tests only run on ubuntu and one version of Python, the tests take a while to complete. This can be very annoying, although they make it harder for the pushed code to fail, so in the end the waiting time is not that bad considering the consequences there can be without them. </p>
+<p>Although we have what some would say were a lot of workflows, we could definitely have added more, for instance a workflow that does the data drifting automatically if data is added somewhere in the process. This could ensure early on that our model's data input stays within expected margins.</p>
 <h2>Running code and tracking experiments</h2>
 <blockquote>
 <p>In the following section we are interested in learning more about the experimental setup for running your code and
@@ -243,7 +243,7 @@ especially the reproducibility of your experiments.</p>
 <em>We used a simple argparser, that worked in the following way: Python  my_script.py --lr 1e-3 --batch_size 25</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>We made use of config files. The main config file "config.yaml" was used to specify optimizer, model etc.. Then, we had separate config files for each of these to specify the hyperparameters such as learning rate and batch size. In our project we only made use of the adam optimizer, but the setup works to handle multiple selections of optimizer as well. Before running an experiment, one had to set up the experiment by changing parameters through these config files, thus no arguments were passed.</p>
+<p>We made use of config files. The main config file "config.yaml" was used to specify optimizer, model etc. We then had separate config files for each of these to specify the hyperparameters such as learning rate and batch size. In our project we only made use of the adam optimizer, but the setup works to handle multiple selections of optimizer as well. Before running an experiment, one had to set up the experiment by changing parameters through these config files, thus no arguments were passed.</p>
 <h3>Question 13</h3>
 <blockquote>
 <p><strong>Reproducibility of experiments are important. Related to the last question, how did you secure that no information</strong>
@@ -254,7 +254,7 @@ especially the reproducibility of your experiments.</p>
 <em>one would have to do ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>We made use of config files via Hydra. Whenever an experiment is run, multiple print statements are run, which prints the contents of the config files, so that you early on can catch if that indeed was the experiment you intended to run. We also used seeding to make the training as reproducible as possible. In addition to this, all configurations were saved as satellite data, thus visible in weights and biases. Also, all final models were saved as artefacts on wandb to ensure reproducibility. As we don't use any randomization, we haven't set a seed, but regardless it can be a good idea to set one, just in case.</p>
+<p>We made use of config files via Hydra. Whenever an experiment is started, multiple print statements are run that display the contents of the config files, so that you can catch if that was indeed the experiment you intended to run. We also used seeding to make the training as reproducible as possible. In addition to this, all configurations were saved as satellite data, thus visible in weights and biases. All final models were saved as artefacts on wandb to ensure reproducibility. As we don't use any randomization we haven't set a seed but regardless it can be a good idea to set one, just in case.</p>
 <h3>Question 14</h3>
 <blockquote>
 <p><strong>Upload 1 to 3 screenshots that show the experiments that you have done in W&amp;B (or another experiment tracking</strong>
@@ -265,13 +265,13 @@ especially the reproducibility of your experiments.</p>
 <p>Example:
 <em>As seen in the first image when have tracked ... and ... which both inform us about ... in our experiments.</em>
 <em>As seen in the second image we are also tracking ... and ...</em></p>
-<p>Answer:
-We used wandbs’ sweep feature to tune hyperparameters with the bayesian method. To configure the sweep we used a sweep_config.yaml to maximize validation accuracy. The tunable parameters were model type, optimizer type, learning rate, momentum, weight decay, step size and batch size.</p>
+<p>Answer:</p>
 </blockquote>
+<p>We used wandb’s sweep feature to tune hyperparameters with the bayesian method. To configure the sweep we used sweep_config.yaml to maximize validation accuracy. The tunable parameters were model type, optimizer type, learning rate, momentum, weight decay, step size and batch size.</p>
 <p>Our sweep followed a pipeline consisting of a sweep where loss, accuracy for the train, test, validation sets and interference time was logged. After training and evaluation the model was saved in a GCP bucket. We limit the amount of runs by defining the run count in the wand agent.</p>
 <p>The chosen metrics loss, accuracy and interference time are important in our case as our problem is a classification task you are either right or wrong so accuracy is a great way of measuring performance. Our model should also be able to run fast to be useful for any agriculture application so logging interference time is also important, with these metrics as context we can choose the best model.</p>
-<p>Here below you can see the results of our wandb sweeps they are really cool. It might be hard to see which exact model is performing great, but that is easier to see in the wandb webpage.</p>
-<p><img alt="title" src="figures/Sweep.png" /></p>
+<p>Here below you can see the results of our wandb sweeps they are really cool we think. It might be hard to see which exact model is performing great, but that is much, much easier to see in the wandb webpage.</p>
+<p><img alt="sweep_image" src="./figures/Sweep.png" /></p>
 <h3>Question 15</h3>
 <blockquote>
 <p><strong>Docker is an important tool for creating containerized applications. Explain how you used docker in your</strong>
@@ -286,10 +286,10 @@ We used wandbs’ sweep feature to tune hyperparameters with the bayesian method
 <p>The api docker image was crucial for this project as it was easy to run the service locally through it, but also it was an integral part in our continuous cloud build pipeline. Where the api was containerized, built, pushed to the cloud artifact registry and then deployed.</p>
 <p>The api image was also built and pushed to docker hub as a part of our github actions workflows:</p>
 <p>https://hub.docker.com/r/arnormoncada/api</p>
-<p>You can pull one of the images from the tags tab e.g.</p>
-<p>docker pull arnormoncada/api:97ec88f5beb75b8e33d5a77e59acce45d298ee30</p>
+<p>You can pull one of the images from the tags tab e.g.
+<code>docker pull arnormoncada/api:97ec88f5beb75b8e33d5a77e59acce45d298ee30</code></p>
 <p>and then run it locally with:</p>
-<p>docker run -p 8000:8000 -e PORT=8000 arnormoncada/api:97ec88f5beb75b8e33d5a77e59acce45d298ee30</p>
+<p><code>docker run -p 8000:8000 -e PORT=8000 arnormoncada/api:97ec88f5beb75b8e33d5a77e59acce45d298ee30</code></p>
 <h3>Question 16</h3>
 <blockquote>
 <p><strong>When running into bugs while trying to run your experiments, how did you perform debugging? Additionally, did you</strong>
@@ -300,8 +300,8 @@ We used wandbs’ sweep feature to tune hyperparameters with the bayesian method
 <em>run of our main code at some point that showed ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>The type of debugging used was very dependent on both the group member and the type of error as the easiest solution often tends to differ. We used both ad-hoc print statements for showing temporary results while running, vs-code debugger for more in-depth analysis (such as shapes or types) and occasional profiling for timeouts etc.. Additionally we made use of visual inspection of image results when applicable. 
-One example of useful use of visual inspection and direct data investigation was when we at a point experienced different performance in the api against the actual evaluation (it turned out that the images were handled slightly differently, resulting in misclassifications). </p>
+<p>The type of debugging used was very dependent on both the group member and the type of error as the easiest solution often tends to differ. We used both ad-hoc print statements for showing temporary results while running, vs-code debugger for more in-depth analysis (such as shapes or types) and occasional profiling for timeouts etc. Additionally we made use of visual inspection of image results when applicable. 
+One example of this type of visual inspection and direct data investigation was when we experienced different performance in the api against the actual evaluation (it turned out that the images were handled slightly differently, resulting in misclassifications). </p>
 <h2>Working in the cloud</h2>
 <blockquote>
 <p>In the following section we would like to know more about your experience when developing in the cloud.</p>
@@ -332,8 +332,7 @@ Example:
 <em>using a custom container: ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>We used a VM instance with a Nvidia T4 GPU with a machine type n1-standard to run training
-One of our GCP buckets contains every trained model. This way we could train models without cluttering up the github or our local machine and still share access to every model with team members. The premise behind this idea is we could see the best performing model on Wandb and then find it in the bucket as it has the same run name then deploy that. We found this method to work very nicely, and is definately something we intend to use in future projects if applicable.</p>
+<p>We used a VM instance with an Nvidia T4 GPU with a machine type n1-standard to run training. One of our GCP buckets contains every trained model. This way we could train models without cluttering up the github or our local machine and still share access to every model with team members. The premise behind this idea is we could see the best performing model on Wandb, then find it in the bucket as it has the same run name and then deploy that. We found this method to work very nicely and is definately something we intend to use in future projects if applicable.</p>
 <h3>Question 19</h3>
 <blockquote>
 <p><strong>Insert 1-2 images of your GCP bucket, such that we can see what data you have stored in it.</strong>
@@ -368,9 +367,9 @@ Here below is the GCP bucket of all our trained models
 <p>Example:
 <em>We managed to train our model in the cloud using the Engine. We did this by ... . The reason we choose the Engine</em>
 <em>was because ...</em></p>
-<p>Answer:
-Our first venture was to use VertexAI to do model training and hyperparameters sweeps, logging and saving models in the artifact registry, an ambitious task and it was too ambitious. We ran into problems integrating our code into a format vertexAI can work with and the course timeline was too tight to solve the issue we decided to pivot and use a VM instance to do model training. But once again we landed in internet difficulties copying the data over to the VM instance after 4 hours the data was still downloading into the VM instance. Thankfully one team member had a nvidia card that was cuda capable gtx 3060 and we did the sweep with that.</p>
+<p>Answer:</p>
 </blockquote>
+<p>Our first venture was to use VertexAI to do model training and hyperparameter sweeps, logging and saving models in the artifact registry, an ambitious task and it was too ambitious. We ran into problems integrating our code into a format vertexAI can work with and the course timeline was too tight to solve the issue we decided to pivot and use a VM instance to do model training. But once again we landed in internet difficulties copying the data over to the VM instance after 4 hours the data was still downloading into the VM instance. Thankfully one team member had a nvidia card that was cuda capable gtx 3060 and we did the sweep with that.</p>
 <h2>Deployment</h2>
 <h3>Question 23</h3>
 <blockquote>
@@ -383,9 +382,9 @@ Our first venture was to use VertexAI to do model training and hyperparameters s
 <p>Answer:</p>
 </blockquote>
 <p>Yes we created an API using the FastAPI framework. The api has a total of three endpoints:</p>
-<p>GET /
+<p><code>GET /
 GET /models
-POST /predict</p>
+POST /predict</code></p>
 <p>The get models endpoint returns the available models for the service. The post predict endpoint allows a user to select their model for inference and upload an image of a plant seedling and get a prediction.</p>
 <p>The model loads in the three available models and their weights from selected "best" training runs on startup.</p>
 <p>The most important endpoint is the /predict. It has query parameter enum where for the user to pick one of the available models for the inference. It then has some basic input validations on the type of files uploaded and responds with a 400 if a wrong filetype is uploaded.</p>
@@ -419,7 +418,7 @@ https://plant-seedlings-api-1034288317994.europe-west1.run.app/</p>
 <p>Answer:</p>
 </blockquote>
 <p>Yes, we wrote integration tests and performance tests for the api. </p>
-<p>The performance tests were creating using locust. Each endpoint was load tested with specific weights. With the predict endpoint having the highest weight and three separate tests for each available model, since this is the most important endpoint. The performance tests were also added to github actions as a separate workflow which triggers on merges to main and stores the results as an artifact., It does the performance test on the api deployed to google cloud. An example result from one of the github workflows can be seen here:</p>
+<p>The performance tests were creating using locust. Each endpoint was load tested with specific weights. With the predict endpoint having the highest weight and three separate tests for each available model, since this is the most important endpoint. The performance tests were also added to github actions as a separate workflow which triggers on merges to main and stores the results as an artifact. It does the performance test on the api deployed to google cloud. An example result from one of the github workflows can be seen here:</p>
 <p><img alt="locust-artifact" src="./figures/locust_artifact.png" /></p>
 <p>Basic Integration tests were added to test the endpoints. The aim was to make test what could be considered deterministic for the api, i.e. the status codes and response schemas. This was also a part of github actions.</p>
 <h3>Question 26</h3>
@@ -438,9 +437,9 @@ request_counter = Counter("requests", "Number of requests", ["endpoint", "status
 request_latency = Histogram("request_latency_seconds", "Request latency", ["endpoint"], registry=MY_REGISTRY)
 plant_image_size = Summary("plant_image_size", "Size of the plant image inputs", registry=MY_REGISTRY)</p>
 <p>As can be seen an error counter and request counter was defined. Also the how long it took for requests to finish for the endpoints, and the total image size of uploaded media to the api.</p>
-<p>These metrics are then accessable at: https://plant-seedlings-api-1034288317994.europe-west1.run.app/metrics/</p>
-<p>We were not able to setup cloud monitoring for these instrumented metrics with the sidecar and/or kuberentes approach as it clashed with our current continuous deployment setup, and we would’ve had to change a number of things too late in the course.</p>
-<p>We did however create some system alerts for if the API is not behaving as expected. Such as if the number of 500 errors exceeded some threshold or if the latency of requests is too high. It would then alert us through email.</p>
+<p>These metrics are then accessible at: https://plant-seedlings-api-1034288317994.europe-west1.run.app/metrics/</p>
+<p>We were not able to setup cloud monitoring for these instrumented metrics with the sidecar and/or kuberentes approach as it clashed with our current continuous deployment setup and we would’ve had to change too many things with little time left in the course.</p>
+<p>We did however create some system alerts if the API is not behaving as expected. Such as if the number of 500 errors exceeded some threshold or if the latency of requests is too high. It would then alert us through email.</p>
 <h2>Overall discussion of project</h2>
 <blockquote>
 <p>In the following section we would like you to think about the general structure of your project.</p>
@@ -483,8 +482,11 @@ first had to extract image features from our dataset and save it in a csv file. 
 <em>Whenever we commit code and push to GitHub, it auto triggers ... and ... . From there the diagram shows ...</em></p>
 <p>Answer:</p>
 </blockquote>
-<p>The starting point of the diagram is our dev, which points to our project, DVC and github. It points to our project because we as developers, develop code, and to github because that is were we do version control and store our code. In our code, we have utilized cookiecutter for the project template, WandB for logging, hydra for configs, timm for pretrained image models and docker for containerization. </p>
-<p>Then from github, a lot of continous integration stuff happens. We have github actions, with our workflows, coverage for testing our code, and pep8 for linting. In our workflows we have also added continous cloud deployment, which brings us to the cloud section of the diagram. As explained earlier, </p>
+<p>The starting point of the diagram is our dev, which points to our project, DVC and github. It points to our project because we as developers, develop code, and to github because that is were we do version control and store our code. In our code, we have utilized cookiecutter for the project template, WandB for logging, hydra for configs, timm for pretrained image models and docker for containerization.</p>
+<p>Then from github, a lot of continuous integration stuff happens. We have github actions, with our workflows, coverage for testing our code, and pep8 for linting. In our workflows we have also added continuous cloud deployment, which brings us to the cloud section of the diagram. </p>
+<p>As explained earlier in question 17, we have used several services from the GCP, so we will not explain them further in this question. But with the cloud services, we have been able to deploy our model via the cloud run and build, and, together with some API stuff, this brings us to the next section of the diagram.</p>
+<p>In the API, the user is able to make a query, and test our model on any image they so wish. Ideally, it should be an image that is similar to our data, else it won't really make sense. A user is also able to clone our git repository. Here they will find everything they need in order to try and run our models (except the data). To aquire the data, they could do a DVC pull, but due to authorization isssues, this method is mostly intended for other developers. A user should therefore try and download the dataset via Kaggle instead, if they want to try and train another model on the same data. The diagram can be seen below:</p>
+<p><img alt="mlops-diagram" src="./figures/mlops_drawio.png" /></p>
 <h3>Question 30</h3>
 <blockquote>
 <p><strong>Discuss the overall struggles of the project. Where did you spend most time and what did you do to overcome these</strong>
@@ -496,6 +498,7 @@ first had to extract image features from our dataset and save it in a csv file. 
 </blockquote>
 <p>One of the problems we had to deal with was GCP and getting it to work with our python scripts. One helpful tool was the tutorial side page in GCP and using google's gemini to ask questions. But one problem constantly encountered was failing to upload a model to the GCP bucket and this was due to the poor internet connection of one team member to solve this code was added to break the upload process into 5 MB chunks. </p>
 <p>One big challenge from week 1 was setting up the remote repository for dvc in google drive (as we did not learn about buckets yet). Mainly the part about oauth consent screen and creating an app client and assigning everyone to it as a test user. This was a bit of a hassle as we were all still unfamiliar with the GCP interface and how to navigate it. There was no special secret to overcoming it, just a lot of trial and error and reading the documentation. But in the end it was a good learning experience and we got it to work.</p>
+<p>Another problem was the docker train images taking up way too much space and taking very long to build. We did not end up using the train docker image much so we only had to build and run it once just to make sure that it was done correctly. If it was not done correctly, i.e. problem with the dockerfile, we had to change it and rebuild the image. This repeated rebuilding ended up taking ~60 gb of space locally for one of the team members and completely filling the local storage. Building this image also took ~15 minutes. We overcame this by brute force, when the disk was full everything was deleted, and then after a couple more tries we got the train images to work.</p>
 <h3>Question 31</h3>
 <blockquote>
 <p><strong>State the individual contributions of each team member. This is required information from DTU, because we need to</strong>
@@ -513,7 +516,7 @@ Answer:</p>
 <p>We shared the workload of the different parallel operations tasks and everyone helped each other out as needed, but if we were to appoint members to
 these tasks it would be more or less something like the following:</p>
 <p>Student s241645 (Arnór) was in charge of GCP runs, builds and monitoring. API development, testing, Github actions and data version control.</p>
-<p>Student s242766 (Dagur) was in charge of </p>
+<p>Student s242766 (Dagur) was in charge of docker files, CLI commands and pre-commit hooks.</p>
 <p>Student s232735 (Jason) was in charge of sweep configs, model GCP bucket and cloud training.</p>
 <p>Student s204225 (Viktor) was in charge of training scripts, W&amp;B log overview</p>
 <p>Student s204218 (Jonas) was in charge of training scripts, data drifting evaluation, config configuration</p>
