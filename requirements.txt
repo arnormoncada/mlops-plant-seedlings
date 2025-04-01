@@ -6,7 +6,7 @@ locust==2.32.6
 loguru==0.7.3
 Markdown==3.7
 matplotlib==3.10.0
-numpy==1.26.4
+numpy==2.2.4
 omegaconf==2.3.0
 opencv_python==4.11.0.86
 opencv_python_headless==4.11.0.86
